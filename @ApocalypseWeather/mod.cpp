@@ -1,0 +1,13 @@
+name = "Apocalypse Weather";
+description = "Постоянная апокалиптическая погода по всей карте: плотная облачность, ливень, туман и сильный ветер, без солнечных периодов.";
+picture = "";
+logo = "";
+logoSmall = "";
+logoOver = "";
+tooltip = "Apocalypse Weather";
+overview = "Форсирует и удерживает тяжёлую штормовую погоду глобально на карте сервера DayZ.";
+action = "";
+actionName = "";
+hideName = 0;
+hidePicture = 0;
+dependencies[] = {"Game", "World", "Mission"};
