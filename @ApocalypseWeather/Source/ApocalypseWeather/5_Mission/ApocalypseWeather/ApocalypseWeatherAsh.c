@@ -13,9 +13,12 @@
 
 class ApocalypseWeatherAshConfig
 {
-	static const bool ENABLED = true;
+	// ВРЕМЕННО ОТКЛЮЧЕНО: соответствующий CfgCloudlets-эффект убран из
+	// config.cpp (подозревался в краше сервера при старте - см. README).
+	// Включайте обратно только вместе с рабочим CfgCloudlets-блоком.
+	static const bool ENABLED = false;
 
-	// ID кастомного particle-эффекта пепла, см. config.cpp -> CfgCloudlets -> class 50521
+	// ID кастомного particle-эффекта пепла (пока не определён в конфиге)
 	static const int ASH_PARTICLE_ID = 50521;
 };
 
