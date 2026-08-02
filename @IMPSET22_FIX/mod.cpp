@@ -1,0 +1,13 @@
+name = "IMPSET22_FIX";
+description = "Патч-конфиг для набора IMPSET22 \"Аль Катала\" — меняет параметры вещей поверх оригинального мода, не затрагивая его файлы.";
+picture = "";
+logo = "";
+logoSmall = "";
+logoOver = "";
+tooltip = "IMPSET22_FIX";
+overview = "Требует оригинальный мод IMPSET22 и добавляет вещи с суффиксом _FIX с изменёнными параметрами.";
+action = "";
+actionName = "";
+hideName = 1;
+hidePicture = 1;
+dependencies[] = {"World"};
