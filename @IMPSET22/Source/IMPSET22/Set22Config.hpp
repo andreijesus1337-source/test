@@ -19,33 +19,31 @@
 #define IMPSET22_AUTHOR				"IMPERIVM"
 
 // ============================================================
-// Название и описание предметов
+// Название и лорное описание предметов
 // ============================================================
-#define IMPSET22_DESC_STANDARD			"Элемент полного костюма экипировки"
-
 #define IMPSET22_BACKPACK_NAME			"Рюкзак Аль Катала"
-#define IMPSET22_BACKPACK_DESC			IMPSET22_DESC_STANDARD
+#define IMPSET22_BACKPACK_DESC			"Потрёпанный тактический рюкзак с нашивками «Аль Катала». В нём бойцы группировки таскают боеприпасы и трофеи, снятые с захваченных блокпостов."
 
 #define IMPSET22_BALACLAVA_NAME			"Балаклава Аль Катала"
-#define IMPSET22_BALACLAVA_DESC			IMPSET22_DESC_STANDARD
+#define IMPSET22_BALACLAVA_DESC			"Плотная балаклава, скрывающая лицо бойца «Аль Катала». Не выдаёт разведчика в темноте и наводит страх на местных при свете дня."
 
 #define IMPSET22_BOOTS_NAME				"Обувь Аль Катала"
-#define IMPSET22_BOOTS_DESC				IMPSET22_DESC_STANDARD
+#define IMPSET22_BOOTS_DESC				"Разношенные берцы, прошедшие не один рейд с «Аль Катала». Подошва почти стёрлась, но шнуровка всё ещё держит крепко."
 
 #define IMPSET22_GLOVES_NAME			"Перчатки Аль Катала"
-#define IMPSET22_GLOVES_DESC			"Удобные перчатки"
+#define IMPSET22_GLOVES_DESC			"Тактические перчатки без пальцев из выкладки «Аль Катала» — не мешают целиться и быстро менять магазин."
 
 #define IMPSET22_HELMET_NAME			"Шлем Аль Катала"
-#define IMPSET22_HELMET_DESC			IMPSET22_DESC_STANDARD
+#define IMPSET22_HELMET_DESC			"Тактический шлем с креплением под ПНВ и фонарь — один из немногих трофеев «Аль Катала», добытых в бою с регулярной армией."
 
 #define IMPSET22_JACKET_NAME			"Куртка Аль Катала"
-#define IMPSET22_JACKET_DESC			IMPSET22_DESC_STANDARD
+#define IMPSET22_JACKET_DESC			"Полевая куртка «Аль Катала», сшитая из разномастных обрезков ткани. Греет слабо, зато не сковывает движений в бою."
 
 #define IMPSET22_PANTS_NAME				"Штаны Аль Катала"
-#define IMPSET22_PANTS_DESC				IMPSET22_DESC_STANDARD
+#define IMPSET22_PANTS_DESC				"Штаны с усиленными коленями и карманами под магазины — стандартная выкладка рядового бойца «Аль Катала»."
 
 #define IMPSET22_VEST_NAME				"Бронежилет Аль Катала"
-#define IMPSET22_VEST_DESC				IMPSET22_DESC_STANDARD
+#define IMPSET22_VEST_DESC				"Тяжёлый бронежилет, снятый с убитого командира «Аль Катала». Многослойная защита давит на плечи, зато держит осколки и большинство пистолетных пуль."
 
 // ============================================================
 // Размеры в инвентаре (ширина x высота, в слотах)
