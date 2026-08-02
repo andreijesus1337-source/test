@@ -133,13 +133,19 @@
 // ============================================================
 
 // Биологическая защита (от заражения), 0 = нет защиты, 1 = полная защита
-#define IMPSET22_BALACLAVA_BIO_PROTECTION	0.25
-#define IMPSET22_HELMET_BIO_PROTECTION		1
+// Сейчас у всего набора — 80% (0.8).
+#define IMPSET22_BALACLAVA_BIO_PROTECTION	0.8
+#define IMPSET22_HELMET_BIO_PROTECTION		0.8
 
 // GlobalArmor.damage — доля урона, проходящая через предмет одинаково
 // для Projectile/Melee/Infected/FragGrenade x Health/Blood/Shock.
 // Меньше значение = лучше защита от пуль/ударов/зомби/гранат.
-#define IMPSET22_HELMET_ARMOR_DAMAGE		0.35
-#define IMPSET22_JACKET_ARMOR_DAMAGE		0.5
-#define IMPSET22_PANTS_ARMOR_DAMAGE			0.5
-#define IMPSET22_VEST_ARMOR_DAMAGE			0.5
+// Сейчас у всего набора — 80% защиты (проходит 20% урона, т.е. 0.2).
+#define IMPSET22_BACKPACK_ARMOR_DAMAGE		0.2
+#define IMPSET22_BALACLAVA_ARMOR_DAMAGE		0.2
+#define IMPSET22_BOOTS_ARMOR_DAMAGE			0.2
+#define IMPSET22_GLOVES_ARMOR_DAMAGE		0.2
+#define IMPSET22_HELMET_ARMOR_DAMAGE		0.2
+#define IMPSET22_JACKET_ARMOR_DAMAGE		0.2
+#define IMPSET22_PANTS_ARMOR_DAMAGE			0.2
+#define IMPSET22_VEST_ARMOR_DAMAGE			0.2

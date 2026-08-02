@@ -165,6 +165,68 @@ class CfgVehicles
 					};
 				};
 			};
+		
+		class GlobalArmor {
+			class Projectile {
+				class Health {
+					damage = IMPSET22_BACKPACK_ARMOR_DAMAGE;
+				};
+				
+				class Blood {
+					damage = IMPSET22_BACKPACK_ARMOR_DAMAGE;
+				};
+				
+				class Shock {
+					damage = IMPSET22_BACKPACK_ARMOR_DAMAGE;
+				};
+			};
+			
+			class Melee {
+				class Health {
+					damage = IMPSET22_BACKPACK_ARMOR_DAMAGE;
+				};
+				
+				class Blood {
+					damage = IMPSET22_BACKPACK_ARMOR_DAMAGE;
+				};
+				
+				class Shock {
+					damage = IMPSET22_BACKPACK_ARMOR_DAMAGE;
+				};
+			};
+			
+			class Infected {
+				class Health {
+					damage = IMPSET22_BACKPACK_ARMOR_DAMAGE;
+				};
+				
+				class Blood {
+					damage = IMPSET22_BACKPACK_ARMOR_DAMAGE;
+				};
+				
+				class Shock {
+					damage = IMPSET22_BACKPACK_ARMOR_DAMAGE;
+				};
+			};
+			
+			class FragGrenade 
+			{
+				class Health 
+				{
+					damage = IMPSET22_BACKPACK_ARMOR_DAMAGE;
+				};
+					
+				class Blood 
+				{
+					damage = IMPSET22_BACKPACK_ARMOR_DAMAGE;
+				};
+					
+				class Shock 
+				{
+					damage = IMPSET22_BACKPACK_ARMOR_DAMAGE;
+				};
+			};
+		};	
 		};
 		
 		class AnimEvents 
@@ -274,6 +336,68 @@ class CfgVehicles
 					};
 				};
 			};
+		
+		class GlobalArmor {
+			class Projectile {
+				class Health {
+					damage = IMPSET22_BALACLAVA_ARMOR_DAMAGE;
+				};
+				
+				class Blood {
+					damage = IMPSET22_BALACLAVA_ARMOR_DAMAGE;
+				};
+				
+				class Shock {
+					damage = IMPSET22_BALACLAVA_ARMOR_DAMAGE;
+				};
+			};
+			
+			class Melee {
+				class Health {
+					damage = IMPSET22_BALACLAVA_ARMOR_DAMAGE;
+				};
+				
+				class Blood {
+					damage = IMPSET22_BALACLAVA_ARMOR_DAMAGE;
+				};
+				
+				class Shock {
+					damage = IMPSET22_BALACLAVA_ARMOR_DAMAGE;
+				};
+			};
+			
+			class Infected {
+				class Health {
+					damage = IMPSET22_BALACLAVA_ARMOR_DAMAGE;
+				};
+				
+				class Blood {
+					damage = IMPSET22_BALACLAVA_ARMOR_DAMAGE;
+				};
+				
+				class Shock {
+					damage = IMPSET22_BALACLAVA_ARMOR_DAMAGE;
+				};
+			};
+			
+			class FragGrenade 
+			{
+				class Health 
+				{
+					damage = IMPSET22_BALACLAVA_ARMOR_DAMAGE;
+				};
+					
+				class Blood 
+				{
+					damage = IMPSET22_BALACLAVA_ARMOR_DAMAGE;
+				};
+					
+				class Shock 
+				{
+					damage = IMPSET22_BALACLAVA_ARMOR_DAMAGE;
+				};
+			};
+		};	
 		};
 		
 		class ClothingTypes 
@@ -382,6 +506,68 @@ class CfgVehicles
 					};
 				};
 			};
+		
+		class GlobalArmor {
+			class Projectile {
+				class Health {
+					damage = IMPSET22_BOOTS_ARMOR_DAMAGE;
+				};
+				
+				class Blood {
+					damage = IMPSET22_BOOTS_ARMOR_DAMAGE;
+				};
+				
+				class Shock {
+					damage = IMPSET22_BOOTS_ARMOR_DAMAGE;
+				};
+			};
+			
+			class Melee {
+				class Health {
+					damage = IMPSET22_BOOTS_ARMOR_DAMAGE;
+				};
+				
+				class Blood {
+					damage = IMPSET22_BOOTS_ARMOR_DAMAGE;
+				};
+				
+				class Shock {
+					damage = IMPSET22_BOOTS_ARMOR_DAMAGE;
+				};
+			};
+			
+			class Infected {
+				class Health {
+					damage = IMPSET22_BOOTS_ARMOR_DAMAGE;
+				};
+				
+				class Blood {
+					damage = IMPSET22_BOOTS_ARMOR_DAMAGE;
+				};
+				
+				class Shock {
+					damage = IMPSET22_BOOTS_ARMOR_DAMAGE;
+				};
+			};
+			
+			class FragGrenade 
+			{
+				class Health 
+				{
+					damage = IMPSET22_BOOTS_ARMOR_DAMAGE;
+				};
+					
+				class Blood 
+				{
+					damage = IMPSET22_BOOTS_ARMOR_DAMAGE;
+				};
+					
+				class Shock 
+				{
+					damage = IMPSET22_BOOTS_ARMOR_DAMAGE;
+				};
+			};
+		};	
 		};
 		
 		class AnimEvents {
@@ -454,6 +640,68 @@ class CfgVehicles
 					};
 				};
 			};
+		
+		class GlobalArmor {
+			class Projectile {
+				class Health {
+					damage = IMPSET22_GLOVES_ARMOR_DAMAGE;
+				};
+				
+				class Blood {
+					damage = IMPSET22_GLOVES_ARMOR_DAMAGE;
+				};
+				
+				class Shock {
+					damage = IMPSET22_GLOVES_ARMOR_DAMAGE;
+				};
+			};
+			
+			class Melee {
+				class Health {
+					damage = IMPSET22_GLOVES_ARMOR_DAMAGE;
+				};
+				
+				class Blood {
+					damage = IMPSET22_GLOVES_ARMOR_DAMAGE;
+				};
+				
+				class Shock {
+					damage = IMPSET22_GLOVES_ARMOR_DAMAGE;
+				};
+			};
+			
+			class Infected {
+				class Health {
+					damage = IMPSET22_GLOVES_ARMOR_DAMAGE;
+				};
+				
+				class Blood {
+					damage = IMPSET22_GLOVES_ARMOR_DAMAGE;
+				};
+				
+				class Shock {
+					damage = IMPSET22_GLOVES_ARMOR_DAMAGE;
+				};
+			};
+			
+			class FragGrenade 
+			{
+				class Health 
+				{
+					damage = IMPSET22_GLOVES_ARMOR_DAMAGE;
+				};
+					
+				class Blood 
+				{
+					damage = IMPSET22_GLOVES_ARMOR_DAMAGE;
+				};
+					
+				class Shock 
+				{
+					damage = IMPSET22_GLOVES_ARMOR_DAMAGE;
+				};
+			};
+		};	
 		};
 		
 		class AnimEvents 
