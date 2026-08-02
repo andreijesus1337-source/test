@@ -116,7 +116,7 @@ class CfgVehicles
 		rotationFlags=16;
 		itemsCargoSize[] = {IMPSET22_BACKPACK_CARGO_X, IMPSET22_BACKPACK_CARGO_Y};
 		weight = IMPSET22_BACKPACK_WEIGHT;
-		varWetMax=0.249;
+		varWetMax=IMPSET22_WET_MAX;
 		heatIsolation = IMPSET22_BACKPACK_HEATISO;
 		repairableWithKits[] = {5, 3};
 		repairCosts[] = {30.0, 25.0};
@@ -250,7 +250,7 @@ class CfgVehicles
 		weight = IMPSET22_BALACLAVA_WEIGHT;
 		itemSize[] = {IMPSET22_BALACLAVA_SIZE_X, IMPSET22_BALACLAVA_SIZE_Y};
 		ragQuantity = 1;
-		varWetMax=0.048999999;
+		varWetMax=IMPSET22_WET_MAX;
 		heatIsolation = IMPSET22_BALACLAVA_HEATISO;
 		repairableWithKits[] = {5, 2};
 		repairCosts[] = {30.0, 25.0};
@@ -351,7 +351,7 @@ class CfgVehicles
 		itemSize[] = {IMPSET22_BOOTS_SIZE_X, IMPSET22_BOOTS_SIZE_Y};
 		weight = IMPSET22_BOOTS_WEIGHT;
 		durability = IMPSET22_BOOTS_DURABILITY;
-		varWetMax = 0.49;
+		varWetMax=IMPSET22_WET_MAX;
 		heatIsolation = IMPSET22_BOOTS_HEATISO;
 		repairableWithKits[] = {3};
 		repairCosts[] = {25.0};
@@ -424,7 +424,7 @@ class CfgVehicles
 		rotationFlags=34;
 		weight=IMPSET22_GLOVES_WEIGHT;
 		itemSize[]={IMPSET22_GLOVES_SIZE_X,IMPSET22_GLOVES_SIZE_Y};
-		varWetMax=0.048999999;
+		varWetMax=IMPSET22_WET_MAX;
 		heatIsolation=IMPSET22_GLOVES_HEATISO;
 		repairableWithKits[]={5,2};
 		repairCosts[]={30,25};
@@ -500,7 +500,7 @@ class CfgVehicles
 		noMask = 0;
 		noNVStrap = 0;
 		noEyewear = 1;
-		varWetMax=0.048999999;
+		varWetMax=IMPSET22_WET_MAX;
 		heatIsolation=IMPSET22_HELMET_HEATISO;
 		hiddenSelections[] = 
 		{
@@ -766,7 +766,7 @@ class CfgVehicles
 		itemSize[] = {IMPSET22_JACKET_SIZE_X, IMPSET22_JACKET_SIZE_Y};
 		itemsCargoSize[] = {IMPSET22_JACKET_CARGO_X, IMPSET22_JACKET_CARGO_Y};
 		quickBarBonus = 3;
-		varWetMax = 0.79;
+		varWetMax=IMPSET22_WET_MAX;
 		heatIsolation = IMPSET22_JACKET_HEATISO;
 		ragQuantity = 4;
 		noVest = 0;
@@ -905,7 +905,7 @@ class CfgVehicles
 		itemsCargoSize[] = {IMPSET22_PANTS_CARGO_X, IMPSET22_PANTS_CARGO_Y};
 		weight = IMPSET22_PANTS_WEIGHT;
 		ragQuantity = 3;
-		varWetMax = 1.0;
+		varWetMax=IMPSET22_WET_MAX;
 		heatIsolation = IMPSET22_PANTS_HEATISO;
 		repairableWithKits[] = {5, 2};
 		repairCosts[] = {30.0, 25.0};
@@ -1050,7 +1050,7 @@ class CfgVehicles
 		itemSize[] = {IMPSET22_VEST_SIZE_X, IMPSET22_VEST_SIZE_Y};
 		itemsCargoSize[] = {IMPSET22_VEST_CARGO_X, IMPSET22_VEST_CARGO_Y};
 		quickBarBonus = 2;
-		varWetMax=0.048999999;
+		varWetMax=IMPSET22_WET_MAX;
 		heatIsolation=IMPSET22_VEST_HEATISO;
 		repairableWithKits[] = {3, 8};
 		repairCosts[] = {75.0, 50.0};
