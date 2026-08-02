@@ -1,0 +1,13 @@
+name = "IMPSET21_FIX";
+description = "Патч-конфиг для набора IMPSET21 \"Megalith\" — меняет параметры вещей поверх оригинального мода, не затрагивая его файлы.";
+picture = "";
+logo = "";
+logoSmall = "";
+logoOver = "";
+tooltip = "IMPSET21_FIX";
+overview = "Требует оригинальный мод IMPSET21 и добавляет вещи с суффиксом _FIX с изменёнными параметрами.";
+action = "";
+actionName = "";
+hideName = 1;
+hidePicture = 1;
+dependencies[] = {"World"};
