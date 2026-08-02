@@ -1,0 +1,13 @@
+name = "IMPSET22";
+description = "Набор экипировки \"Аль Катала\" (рюкзак, балаклава, обувь, перчатки, шлем, куртка, штаны, бронежилет).";
+picture = "";
+logo = "";
+logoSmall = "";
+logoOver = "";
+tooltip = "IMPSET22";
+overview = "Добавляет комплект одежды и снаряжения \"Аль Катала\" для DayZ.";
+action = "";
+actionName = "";
+hideName = 1;
+hidePicture = 1;
+dependencies[] = {"World"};

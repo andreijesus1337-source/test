@@ -1,0 +1,1 @@
+class IMP_Vest_SET22_ColorBase : Vest_Base {};

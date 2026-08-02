@@ -1,0 +1,1 @@
+class IMP_Bag_SET22_ColorBase : Backpack_Base {};

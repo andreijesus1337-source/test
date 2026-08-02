@@ -1,0 +1,1 @@
+class IMP_Gloves_SET22_ColorBase : Gloves_Base {};

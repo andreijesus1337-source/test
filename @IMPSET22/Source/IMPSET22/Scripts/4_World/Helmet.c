@@ -1,0 +1,1 @@
+class IMP_Helmet_SET22_ColorBase : Mich2001Helmet {};

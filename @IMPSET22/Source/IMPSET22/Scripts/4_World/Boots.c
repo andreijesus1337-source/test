@@ -1,0 +1,1 @@
+class IMP_Boots_SET22_ColorBase : Shoes_Base {};
