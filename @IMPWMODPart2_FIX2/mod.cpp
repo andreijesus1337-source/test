@@ -1,0 +1,13 @@
+name = "IMPWMODPart2_FIX2";
+description = "Патч-конфиг для второго набора оружия IMPWMODPart2 — меняет параметры стволов поверх оригинального мода, не затрагивая его файлы.";
+picture = "";
+logo = "";
+logoSmall = "";
+logoOver = "";
+tooltip = "IMPWMODPart2_FIX2";
+overview = "Требует оригинальный оружейный мод IMPWMODPart2 (все его подпаки) и добавляет вариант каждого ствола с суффиксом _FIX2 с изменёнными параметрами.";
+action = "";
+actionName = "";
+hideName = 1;
+hidePicture = 1;
+dependencies[] = {"World"};
