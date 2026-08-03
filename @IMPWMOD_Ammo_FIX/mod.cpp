@@ -1,0 +1,13 @@
+name = "IMPWMOD_Ammo_FIX";
+description = "Патч-конфиг для патронов оружейного мода IMPWMOD — меняет урон пуль, вес/ёмкость патронов и цинков поверх оригинального мода, не затрагивая его файлы.";
+picture = "";
+logo = "";
+logoSmall = "";
+logoOver = "";
+tooltip = "IMPWMOD_Ammo_FIX";
+overview = "Требует оригинальный оружейный мод IMPWMOD (блок ammo/*) и переопределяет параметры патронов/цинков/урона пуль теми же именами классов.";
+action = "";
+actionName = "";
+hideName = 1;
+hidePicture = 1;
+dependencies[] = {"World"};
