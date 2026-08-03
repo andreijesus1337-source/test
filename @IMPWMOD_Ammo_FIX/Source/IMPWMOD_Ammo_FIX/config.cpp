@@ -27,8 +27,7 @@ class CfgPatches
 class cfgAmmo
 {
 	// ==== 127x42 ====
-	class IMP_Bullet_127x42;
-	class IMP_Bullet_127x42 : IMP_Bullet_127x42
+	class IMP_Bullet_127x42
 	{
 		class DamageApplied
 		{
@@ -39,8 +38,7 @@ class cfgAmmo
 	};
 
 	// ==== 338LM ====
-	class IMP_Bullet_338LM;
-	class IMP_Bullet_338LM : IMP_Bullet_338LM
+	class IMP_Bullet_338LM
 	{
 		class DamageApplied
 		{
@@ -51,8 +49,7 @@ class cfgAmmo
 	};
 
 	// ==== 408 ====
-	class IMP_Bullet_408;
-	class IMP_Bullet_408 : IMP_Bullet_408
+	class IMP_Bullet_408
 	{
 		class DamageApplied
 		{
@@ -63,8 +60,7 @@ class cfgAmmo
 	};
 
 	// ==== 127x55 ====
-	class IMP_Bullet_127x55;
-	class IMP_Bullet_127x55 : IMP_Bullet_127x55
+	class IMP_Bullet_127x55
 	{
 		class DamageApplied
 		{
@@ -75,8 +71,7 @@ class cfgAmmo
 	};
 
 	// ==== 127x99 ====
-	class IMP_Bullet_127x99;
-	class IMP_Bullet_127x99 : IMP_Bullet_127x99
+	class IMP_Bullet_127x99
 	{
 		class DamageApplied
 		{
@@ -87,8 +82,7 @@ class cfgAmmo
 	};
 
 	// ==== 300AAC ====
-	class IMP_Bullet_300AAC;
-	class IMP_Bullet_300AAC : IMP_Bullet_300AAC
+	class IMP_Bullet_300AAC
 	{
 		class DamageApplied
 		{
@@ -99,8 +93,7 @@ class cfgAmmo
 	};
 
 	// ==== 792x57 ====
-	class IMP_Bullet_792x57;
-	class IMP_Bullet_792x57 : IMP_Bullet_792x57
+	class IMP_Bullet_792x57
 	{
 		class DamageApplied
 		{
@@ -111,8 +104,7 @@ class cfgAmmo
 	};
 
 	// ==== 762x25 ====
-	class IMP_Bullet_762x25;
-	class IMP_Bullet_762x25 : IMP_Bullet_762x25
+	class IMP_Bullet_762x25
 	{
 		class DamageApplied
 		{
@@ -123,8 +115,7 @@ class cfgAmmo
 	};
 
 	// ==== 57x28 ====
-	class IMP_Bullet_57x28;
-	class IMP_Bullet_57x28 : IMP_Bullet_57x28
+	class IMP_Bullet_57x28
 	{
 		class DamageApplied
 		{
@@ -135,8 +126,7 @@ class cfgAmmo
 	};
 
 	// ==== 9x18 ====
-	class IMP_Bullet_9x18;
-	class IMP_Bullet_9x18 : IMP_Bullet_9x18
+	class IMP_Bullet_9x18
 	{
 		class DamageApplied
 		{
@@ -147,8 +137,7 @@ class cfgAmmo
 	};
 
 	// ==== 127x108 ====
-	class IMP_Bullet_127x108;
-	class IMP_Bullet_127x108 : IMP_Bullet_127x108
+	class IMP_Bullet_127x108
 	{
 		class DamageApplied
 		{
@@ -159,8 +148,7 @@ class cfgAmmo
 	};
 
 	// ==== 20mm ====
-	class IMP_Bullet_20mm;
-	class IMP_Bullet_20mm : IMP_Bullet_20mm
+	class IMP_Bullet_20mm
 	{
 		class DamageApplied
 		{
@@ -171,8 +159,7 @@ class cfgAmmo
 	};
 
 	// ==== 3006 ====
-	class IMP_Bullet_3006;
-	class IMP_Bullet_3006 : IMP_Bullet_3006
+	class IMP_Bullet_3006
 	{
 		class DamageApplied
 		{
@@ -183,8 +170,7 @@ class cfgAmmo
 	};
 
 	// ==== 46x30 ====
-	class IMP_Bullet_46x30;
-	class IMP_Bullet_46x30 : IMP_Bullet_46x30
+	class IMP_Bullet_46x30
 	{
 		class DamageApplied
 		{
@@ -199,8 +185,7 @@ class cfgAmmo
 class CfgMagazines
 {
 	// ==== 127x108 - патрон (IMP_Ammo_127x108) ====
-	class IMP_Ammo_127x108;
-	class IMP_Ammo_127x108 : IMP_Ammo_127x108
+	class IMP_Ammo_127x108
 	{
 		weight = 4;
 		count = 5;
@@ -218,8 +203,7 @@ class CfgMagazines
 	};
 
 	// ==== 127x42 - патрон (IMP_Ammo_127x42) ====
-	class IMP_Ammo_127x42;
-	class IMP_Ammo_127x42 : IMP_Ammo_127x42
+	class IMP_Ammo_127x42
 	{
 		weight = 4;
 		count = 15;
@@ -237,8 +221,7 @@ class CfgMagazines
 	};
 
 	// ==== 127x55 - патрон (IMP_Ammo_127x55) ====
-	class IMP_Ammo_127x55;
-	class IMP_Ammo_127x55 : IMP_Ammo_127x55
+	class IMP_Ammo_127x55
 	{
 		weight = 4;
 		count = 15;
@@ -256,8 +239,7 @@ class CfgMagazines
 	};
 
 	// ==== 127x99 - патрон (IMP_Ammo_127x99) ====
-	class IMP_Ammo_127x99;
-	class IMP_Ammo_127x99 : IMP_Ammo_127x99
+	class IMP_Ammo_127x99
 	{
 		weight = 4;
 		count = 10;
@@ -275,8 +257,7 @@ class CfgMagazines
 	};
 
 	// ==== 20mm - патрон (IMP_Ammo_20mm) ====
-	class IMP_Ammo_20mm;
-	class IMP_Ammo_20mm : IMP_Ammo_20mm
+	class IMP_Ammo_20mm
 	{
 		weight = 30;
 		count = 5;
@@ -294,8 +275,7 @@ class CfgMagazines
 	};
 
 	// ==== 30-06 - патрон (IMP_Ammo_3006) ====
-	class IMP_Ammo_3006;
-	class IMP_Ammo_3006 : IMP_Ammo_3006
+	class IMP_Ammo_3006
 	{
 		weight = 16;
 		count = 50;
@@ -312,8 +292,7 @@ class CfgMagazines
 	};
 
 	// ==== 300AACBlackout - патрон (IMP_Ammo_300AAC) ====
-	class IMP_Ammo_300AAC;
-	class IMP_Ammo_300AAC : IMP_Ammo_300AAC
+	class IMP_Ammo_300AAC
 	{
 		weight = 4;
 		count = 30;
@@ -331,8 +310,7 @@ class CfgMagazines
 	};
 
 	// ==== 338LM - патрон (IMP_Ammo_338LM) ====
-	class IMP_Ammo_338LM;
-	class IMP_Ammo_338LM : IMP_Ammo_338LM
+	class IMP_Ammo_338LM
 	{
 		weight = 4;
 		count = 20;
@@ -350,8 +328,7 @@ class CfgMagazines
 	};
 
 	// ==== 408 - патрон (IMP_Ammo_408) ====
-	class IMP_Ammo_408;
-	class IMP_Ammo_408 : IMP_Ammo_408
+	class IMP_Ammo_408
 	{
 		weight = 4;
 		count = 10;
@@ -369,8 +346,7 @@ class CfgMagazines
 	};
 
 	// ==== 46x30 - патрон (IMP_Ammo_46x30) ====
-	class IMP_Ammo_46x30;
-	class IMP_Ammo_46x30 : IMP_Ammo_46x30
+	class IMP_Ammo_46x30
 	{
 		weight = 4;
 		count = 40;
@@ -388,8 +364,7 @@ class CfgMagazines
 	};
 
 	// ==== 57x28 - патрон (IMP_Ammo_57x28) ====
-	class IMP_Ammo_57x28;
-	class IMP_Ammo_57x28 : IMP_Ammo_57x28
+	class IMP_Ammo_57x28
 	{
 		weight = 4;
 		count = 50;
@@ -406,8 +381,7 @@ class CfgMagazines
 	};
 
 	// ==== 762x25 - патрон (IMP_Ammo_762x25) ====
-	class IMP_Ammo_762x25;
-	class IMP_Ammo_762x25 : IMP_Ammo_762x25
+	class IMP_Ammo_762x25
 	{
 		weight = 4;
 		count = 50;
@@ -424,8 +398,7 @@ class CfgMagazines
 	};
 
 	// ==== 792x57 - патрон (IMP_Ammo_792x57) ====
-	class IMP_Ammo_792x57;
-	class IMP_Ammo_792x57 : IMP_Ammo_792x57
+	class IMP_Ammo_792x57
 	{
 		weight = 4;
 		count = 20;
@@ -443,8 +416,7 @@ class CfgMagazines
 	};
 
 	// ==== 9x18 - патрон (IMP_Ammo_9x18) ====
-	class IMP_Ammo_9x18;
-	class IMP_Ammo_9x18 : IMP_Ammo_9x18
+	class IMP_Ammo_9x18
 	{
 		weight = 4;
 		count = 50;
@@ -465,8 +437,7 @@ class CfgMagazines
 class CfgVehicles
 {
 	// ==== 127x108 - цинк (IMP_AmmoBox_127x108_5Rnd) ====
-	class IMP_AmmoBox_127x108_5Rnd;
-	class IMP_AmmoBox_127x108_5Rnd : IMP_AmmoBox_127x108_5Rnd
+	class IMP_AmmoBox_127x108_5Rnd
 	{
 		weight = 185;
 		itemSize[] = {3,2};
@@ -483,8 +454,7 @@ class CfgVehicles
 	};
 
 	// ==== 127x42 - цинк (IMP_AmmoBox_127x42_100Rnd) ====
-	class IMP_AmmoBox_127x42_100Rnd;
-	class IMP_AmmoBox_127x42_100Rnd : IMP_AmmoBox_127x42_100Rnd
+	class IMP_AmmoBox_127x42_100Rnd
 	{
 		weight = 185;
 		itemSize[] = {3,2};
@@ -501,8 +471,7 @@ class CfgVehicles
 	};
 
 	// ==== 127x42 - цинк (IMP_AmmoBox_127x42_15Rnd) ====
-	class IMP_AmmoBox_127x42_15Rnd;
-	class IMP_AmmoBox_127x42_15Rnd : IMP_AmmoBox_127x42_15Rnd
+	class IMP_AmmoBox_127x42_15Rnd
 	{
 		weight = 185;
 		itemSize[] = {3,2};
@@ -519,8 +488,7 @@ class CfgVehicles
 	};
 
 	// ==== 127x55 - цинк (IMP_AmmoBox_127x55_100Rnd) ====
-	class IMP_AmmoBox_127x55_100Rnd;
-	class IMP_AmmoBox_127x55_100Rnd : IMP_AmmoBox_127x55_100Rnd
+	class IMP_AmmoBox_127x55_100Rnd
 	{
 		weight = 185;
 		itemSize[] = {3,2};
@@ -537,8 +505,7 @@ class CfgVehicles
 	};
 
 	// ==== 127x55 - цинк (IMP_AmmoBox_127x55_15Rnd) ====
-	class IMP_AmmoBox_127x55_15Rnd;
-	class IMP_AmmoBox_127x55_15Rnd : IMP_AmmoBox_127x55_15Rnd
+	class IMP_AmmoBox_127x55_15Rnd
 	{
 		weight = 185;
 		itemSize[] = {3,2};
@@ -555,8 +522,7 @@ class CfgVehicles
 	};
 
 	// ==== 127x99 - цинк (IMP_AmmoBox_127x99_100Rnd) ====
-	class IMP_AmmoBox_127x99_100Rnd;
-	class IMP_AmmoBox_127x99_100Rnd : IMP_AmmoBox_127x99_100Rnd
+	class IMP_AmmoBox_127x99_100Rnd
 	{
 		weight = 185;
 		itemSize[] = {3,2};
@@ -573,8 +539,7 @@ class CfgVehicles
 	};
 
 	// ==== 127x99 - цинк (IMP_AmmoBox_127x99_10Rnd) ====
-	class IMP_AmmoBox_127x99_10Rnd;
-	class IMP_AmmoBox_127x99_10Rnd : IMP_AmmoBox_127x99_10Rnd
+	class IMP_AmmoBox_127x99_10Rnd
 	{
 		weight = 185;
 		itemSize[] = {3,2};
@@ -591,8 +556,7 @@ class CfgVehicles
 	};
 
 	// ==== 20mm - цинк (IMP_AmmoBox_20mm_5Rnd) ====
-	class IMP_AmmoBox_20mm_5Rnd;
-	class IMP_AmmoBox_20mm_5Rnd : IMP_AmmoBox_20mm_5Rnd
+	class IMP_AmmoBox_20mm_5Rnd
 	{
 		weight = 185;
 		itemSize[] = {3,2};
@@ -609,8 +573,7 @@ class CfgVehicles
 	};
 
 	// ==== 30-06 - цинк (IMP_AmmoBox_3006_20Rnd) ====
-	class IMP_AmmoBox_3006_20Rnd;
-	class IMP_AmmoBox_3006_20Rnd : IMP_AmmoBox_3006_20Rnd
+	class IMP_AmmoBox_3006_20Rnd
 	{
 		weight = 185;
 		itemSize[] = {2,1};
@@ -627,8 +590,7 @@ class CfgVehicles
 	};
 
 	// ==== 300AACBlackout - цинк (IMP_AmmoBox_300AAC_100Rnd) ====
-	class IMP_AmmoBox_300AAC_100Rnd;
-	class IMP_AmmoBox_300AAC_100Rnd : IMP_AmmoBox_300AAC_100Rnd
+	class IMP_AmmoBox_300AAC_100Rnd
 	{
 		weight = 185;
 		itemSize[] = {2,1};
@@ -645,8 +607,7 @@ class CfgVehicles
 	};
 
 	// ==== 300AACBlackout - цинк (IMP_AmmoBox_300AAC_30Rnd) ====
-	class IMP_AmmoBox_300AAC_30Rnd;
-	class IMP_AmmoBox_300AAC_30Rnd : IMP_AmmoBox_300AAC_30Rnd
+	class IMP_AmmoBox_300AAC_30Rnd
 	{
 		weight = 185;
 		itemSize[] = {2,1};
@@ -663,8 +624,7 @@ class CfgVehicles
 	};
 
 	// ==== 338LM - цинк (IMP_AmmoBox_338LM_100Rnd) ====
-	class IMP_AmmoBox_338LM_100Rnd;
-	class IMP_AmmoBox_338LM_100Rnd : IMP_AmmoBox_338LM_100Rnd
+	class IMP_AmmoBox_338LM_100Rnd
 	{
 		weight = 185;
 		itemSize[] = {3,2};
@@ -681,8 +641,7 @@ class CfgVehicles
 	};
 
 	// ==== 338LM - цинк (IMP_AmmoBox_338LM_20Rnd) ====
-	class IMP_AmmoBox_338LM_20Rnd;
-	class IMP_AmmoBox_338LM_20Rnd : IMP_AmmoBox_338LM_20Rnd
+	class IMP_AmmoBox_338LM_20Rnd
 	{
 		weight = 185;
 		itemSize[] = {3,2};
@@ -699,8 +658,7 @@ class CfgVehicles
 	};
 
 	// ==== 408 - цинк (IMP_AmmoBox_408_100Rnd) ====
-	class IMP_AmmoBox_408_100Rnd;
-	class IMP_AmmoBox_408_100Rnd : IMP_AmmoBox_408_100Rnd
+	class IMP_AmmoBox_408_100Rnd
 	{
 		weight = 185;
 		itemSize[] = {3,2};
@@ -717,8 +675,7 @@ class CfgVehicles
 	};
 
 	// ==== 408 - цинк (IMP_AmmoBox_408_10Rnd) ====
-	class IMP_AmmoBox_408_10Rnd;
-	class IMP_AmmoBox_408_10Rnd : IMP_AmmoBox_408_10Rnd
+	class IMP_AmmoBox_408_10Rnd
 	{
 		weight = 185;
 		itemSize[] = {3,2};
@@ -735,8 +692,7 @@ class CfgVehicles
 	};
 
 	// ==== 46x30 - цинк (IMP_AmmoBox_46x30_40Rnd) ====
-	class IMP_AmmoBox_46x30_40Rnd;
-	class IMP_AmmoBox_46x30_40Rnd : IMP_AmmoBox_46x30_40Rnd
+	class IMP_AmmoBox_46x30_40Rnd
 	{
 		weight = 185;
 		itemSize[] = {1,2};
@@ -753,8 +709,7 @@ class CfgVehicles
 	};
 
 	// ==== 46x30 - цинк (IMP_AmmoBox_46x30_15Rnd) ====
-	class IMP_AmmoBox_46x30_15Rnd;
-	class IMP_AmmoBox_46x30_15Rnd : IMP_AmmoBox_46x30_15Rnd
+	class IMP_AmmoBox_46x30_15Rnd
 	{
 		weight = 185;
 		itemSize[] = {1,2};
@@ -771,8 +726,7 @@ class CfgVehicles
 	};
 
 	// ==== 57x28 - цинк (IMP_AmmoBox_57x28_50Rnd) ====
-	class IMP_AmmoBox_57x28_50Rnd;
-	class IMP_AmmoBox_57x28_50Rnd : IMP_AmmoBox_57x28_50Rnd
+	class IMP_AmmoBox_57x28_50Rnd
 	{
 		weight = 185;
 		itemSize[] = {2,1};
@@ -789,8 +743,7 @@ class CfgVehicles
 	};
 
 	// ==== 762x25 - цинк (IMP_AmmoBox_762x25_50Rnd) ====
-	class IMP_AmmoBox_762x25_50Rnd;
-	class IMP_AmmoBox_762x25_50Rnd : IMP_AmmoBox_762x25_50Rnd
+	class IMP_AmmoBox_762x25_50Rnd
 	{
 		weight = 185;
 		itemSize[] = {2,1};
@@ -807,8 +760,7 @@ class CfgVehicles
 	};
 
 	// ==== 792x57 - цинк (IMP_AmmoBox_792x57_100Rnd) ====
-	class IMP_AmmoBox_792x57_100Rnd;
-	class IMP_AmmoBox_792x57_100Rnd : IMP_AmmoBox_792x57_100Rnd
+	class IMP_AmmoBox_792x57_100Rnd
 	{
 		weight = 185;
 		itemSize[] = {3,2};
@@ -825,8 +777,7 @@ class CfgVehicles
 	};
 
 	// ==== 792x57 - цинк (IMP_AmmoBox_792x57_20Rnd) ====
-	class IMP_AmmoBox_792x57_20Rnd;
-	class IMP_AmmoBox_792x57_20Rnd : IMP_AmmoBox_792x57_20Rnd
+	class IMP_AmmoBox_792x57_20Rnd
 	{
 		weight = 185;
 		itemSize[] = {3,2};
@@ -843,8 +794,7 @@ class CfgVehicles
 	};
 
 	// ==== 9x18 - цинк (IMP_AmmoBox_9x18_50Rnd) ====
-	class IMP_AmmoBox_9x18_50Rnd;
-	class IMP_AmmoBox_9x18_50Rnd : IMP_AmmoBox_9x18_50Rnd
+	class IMP_AmmoBox_9x18_50Rnd
 	{
 		weight = 185;
 		itemSize[] = {2,1};
