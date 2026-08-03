@@ -1,0 +1,13 @@
+name = "IMPWMODPart2_Magazine_FIX2";
+description = "Патч-конфиг для магазинов второго оружейного набора IMPWMODPart2 — меняет вес/ёмкость/отдачу/прочность магазинов поверх оригинального мода, не затрагивая его файлы.";
+picture = "";
+logo = "";
+logoSmall = "";
+logoOver = "";
+tooltip = "IMPWMODPart2_Magazine_FIX2";
+overview = "Требует оригинальные PBO магазинов IMPWMODPart2 и переопределяет их параметры теми же именами классов.";
+action = "";
+actionName = "";
+hideName = 1;
+hidePicture = 1;
+dependencies[] = {"World"};
