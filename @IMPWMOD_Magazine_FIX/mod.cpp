@@ -1,0 +1,13 @@
+name = "IMPWMOD_Magazine_FIX";
+description = "Патч-конфиг для магазинов оружейного мода IMPWMOD — меняет вес/ёмкость/отдачу/прочность магазинов поверх оригинального мода, не затрагивая его файлы.";
+picture = "";
+logo = "";
+logoSmall = "";
+logoOver = "";
+tooltip = "IMPWMOD_Magazine_FIX";
+overview = "Требует оригинальные PBO магазинов IMPWMOD и переопределяет их параметры теми же именами классов.";
+action = "";
+actionName = "";
+hideName = 1;
+hidePicture = 1;
+dependencies[] = {"World"};
