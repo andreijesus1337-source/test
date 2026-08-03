@@ -1,0 +1,13 @@
+name = "IMPWMOD_FIX";
+description = "Патч-конфиг для оружейного мода IMPWMOD — меняет параметры стволов поверх оригинального мода, не затрагивая его файлы.";
+picture = "";
+logo = "";
+logoSmall = "";
+logoOver = "";
+tooltip = "IMPWMOD_FIX";
+overview = "Требует оригинальный оружейный мод IMPWMOD (все его подпаки) и добавляет вариант каждого ствола с суффиксом _FIX с изменёнными параметрами.";
+action = "";
+actionName = "";
+hideName = 1;
+hidePicture = 1;
+dependencies[] = {"World"};
