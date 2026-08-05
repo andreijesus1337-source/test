@@ -1,0 +1,13 @@
+name = "DZ_Vehicles_FIX";
+description = "Патч-конфиг для ванильных машин DayZ — меняет разгон/мощность двигателя, передачи, сцепление, тормоза, подвеску и дифференциалы поверх игровых файлов, не затрагивая их.";
+picture = "";
+logo = "";
+logoSmall = "";
+logoOver = "";
+tooltip = "DZ_Vehicles_FIX";
+overview = "Требует только саму игру (DZ_Vehicles_Wheeled идёт с сервером по умолчанию) и переопределяет физику машин новыми _FIX классами.";
+action = "";
+actionName = "";
+hideName = 1;
+hidePicture = 1;
+dependencies[] = {"World"};
