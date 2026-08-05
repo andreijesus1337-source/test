@@ -23,6 +23,11 @@
 //
 // Требует DZ_Vehicles_Wheeled (часть игры, идёт с сервером по
 // умолчанию - отдельно ставить не нужно).
+//
+// Вложенные классы (SimulationModule/Axles/Front/Rear/Wheels/Left/
+// Right) переоткрыты с явным ": ИмяКласса" - один в один как в
+// оригинальном файле игры (а не просто голым именем), чтобы
+// исключить любые сомнения в правильности слияния конфига.
 // ============================================================
 
 class CfgPatches
@@ -63,7 +68,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 55;
 		fuelConsumption = 13;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -120,9 +125,9 @@ class CfgVehicles
 				reverse = 3.51;
 				ratios[] = {3.5,2.26,1.45,1.0};
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 2100;
 					wheelHubMass = 10;
@@ -135,8 +140,21 @@ class CfgVehicles
 						travelMaxUp = 0.079;
 						travelMaxDown = 0.06;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "CivSedanWheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "CivSedanWheel_2_1";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 2200;
 					maxHandbrakeTorque = 4400;
@@ -154,6 +172,19 @@ class CfgVehicles
 						damping = 5100;
 						travelMaxUp = 0.086;
 						travelMaxDown = 0.133;
+					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_2";
+							inventorySlot = "CivSedanWheel_1_2";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_2";
+							inventorySlot = "CivSedanWheel_2_2";
+						};
 					};
 				};
 			};
@@ -164,7 +195,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 55;
 		fuelConsumption = 13;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -221,9 +252,9 @@ class CfgVehicles
 				reverse = 3.51;
 				ratios[] = {3.5,2.26,1.45,1.0};
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 2100;
 					wheelHubMass = 10;
@@ -236,8 +267,21 @@ class CfgVehicles
 						travelMaxUp = 0.079;
 						travelMaxDown = 0.06;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "CivSedanWheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "CivSedanWheel_2_1";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 2200;
 					maxHandbrakeTorque = 4400;
@@ -255,6 +299,19 @@ class CfgVehicles
 						damping = 5100;
 						travelMaxUp = 0.086;
 						travelMaxDown = 0.133;
+					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_2";
+							inventorySlot = "CivSedanWheel_1_2";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_2";
+							inventorySlot = "CivSedanWheel_2_2";
+						};
 					};
 				};
 			};
@@ -265,7 +322,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 55;
 		fuelConsumption = 13;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -322,9 +379,9 @@ class CfgVehicles
 				reverse = 3.51;
 				ratios[] = {3.5,2.26,1.45,1.0};
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 2100;
 					wheelHubMass = 10;
@@ -337,8 +394,21 @@ class CfgVehicles
 						travelMaxUp = 0.079;
 						travelMaxDown = 0.06;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "CivSedanWheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "CivSedanWheel_2_1";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 2200;
 					maxHandbrakeTorque = 4400;
@@ -357,6 +427,19 @@ class CfgVehicles
 						travelMaxUp = 0.086;
 						travelMaxDown = 0.133;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_2";
+							inventorySlot = "CivSedanWheel_1_2";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_2";
+							inventorySlot = "CivSedanWheel_2_2";
+						};
+					};
 				};
 			};
 		};
@@ -366,7 +449,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 42;
 		fuelConsumption = 11;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -426,9 +509,9 @@ class CfgVehicles
 				ratio = 1.5;
 				type = "DIFFERENTIAL_LOCKED";
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 1900;
 					maxHandbrakeTorque = 5000;
@@ -447,8 +530,21 @@ class CfgVehicles
 						travelMaxUp = 0.0882;
 						travelMaxDown = 0.0833;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "NivaWheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "NivaWheel_2_1";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 1560;
 					maxHandbrakeTorque = 5000;
@@ -466,6 +562,19 @@ class CfgVehicles
 						damping = 7600;
 						travelMaxUp = 0.1587;
 						travelMaxDown = 0.1059;
+					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_2";
+							inventorySlot = "NivaWheel_1_2";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_2";
+							inventorySlot = "NivaWheel_2_2";
+						};
 					};
 				};
 			};
@@ -476,7 +585,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 42;
 		fuelConsumption = 11;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -536,9 +645,9 @@ class CfgVehicles
 				ratio = 1.5;
 				type = "DIFFERENTIAL_LOCKED";
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 1900;
 					maxHandbrakeTorque = 5000;
@@ -557,8 +666,21 @@ class CfgVehicles
 						travelMaxUp = 0.0882;
 						travelMaxDown = 0.0833;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "NivaWheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "NivaWheel_2_1";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 1560;
 					maxHandbrakeTorque = 5000;
@@ -576,6 +698,19 @@ class CfgVehicles
 						damping = 7600;
 						travelMaxUp = 0.1587;
 						travelMaxDown = 0.1059;
+					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_2";
+							inventorySlot = "NivaWheel_1_2";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_2";
+							inventorySlot = "NivaWheel_2_2";
+						};
 					};
 				};
 			};
@@ -586,7 +721,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 42;
 		fuelConsumption = 11;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -646,9 +781,9 @@ class CfgVehicles
 				ratio = 1.5;
 				type = "DIFFERENTIAL_LOCKED";
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 1900;
 					maxHandbrakeTorque = 5000;
@@ -667,8 +802,21 @@ class CfgVehicles
 						travelMaxUp = 0.0882;
 						travelMaxDown = 0.0833;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "NivaWheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "NivaWheel_2_1";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 1560;
 					maxHandbrakeTorque = 5000;
@@ -687,6 +835,19 @@ class CfgVehicles
 						travelMaxUp = 0.1587;
 						travelMaxDown = 0.1059;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_2";
+							inventorySlot = "NivaWheel_1_2";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_2";
+							inventorySlot = "NivaWheel_2_2";
+						};
+					};
 				};
 			};
 		};
@@ -696,7 +857,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 55;
 		fuelConsumption = 6.5;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -753,9 +914,9 @@ class CfgVehicles
 				reverse = 3.167;
 				ratios[] = {3.455,2.118,1.444,1.129,0.912};
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 2060;
 					wheelHubMass = 5;
@@ -773,8 +934,21 @@ class CfgVehicles
 						travelMaxUp = 0.16;
 						travelMaxDown = 0.16;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "Hatchback_02_Wheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "Hatchback_02_Wheel_2_1";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 1500;
 					maxHandbrakeTorque = 4000;
@@ -787,6 +961,19 @@ class CfgVehicles
 						damping = 8000;
 						travelMaxUp = 0.16;
 						travelMaxDown = 0.16;
+					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_2";
+							inventorySlot = "Hatchback_02_Wheel_1_2";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_2";
+							inventorySlot = "Hatchback_02_Wheel_2_2";
+						};
 					};
 				};
 			};
@@ -797,7 +984,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 55;
 		fuelConsumption = 6.5;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -854,9 +1041,9 @@ class CfgVehicles
 				reverse = 3.167;
 				ratios[] = {3.455,2.118,1.444,1.129,0.912};
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 2060;
 					wheelHubMass = 5;
@@ -874,8 +1061,21 @@ class CfgVehicles
 						travelMaxUp = 0.16;
 						travelMaxDown = 0.16;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "Hatchback_02_Wheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "Hatchback_02_Wheel_2_1";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 1500;
 					maxHandbrakeTorque = 4000;
@@ -888,6 +1088,19 @@ class CfgVehicles
 						damping = 8000;
 						travelMaxUp = 0.16;
 						travelMaxDown = 0.16;
+					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_2";
+							inventorySlot = "Hatchback_02_Wheel_1_2";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_2";
+							inventorySlot = "Hatchback_02_Wheel_2_2";
+						};
 					};
 				};
 			};
@@ -898,7 +1111,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 55;
 		fuelConsumption = 6.5;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -955,9 +1168,9 @@ class CfgVehicles
 				reverse = 3.167;
 				ratios[] = {3.455,2.118,1.444,1.129,0.912};
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 2060;
 					wheelHubMass = 5;
@@ -975,8 +1188,21 @@ class CfgVehicles
 						travelMaxUp = 0.16;
 						travelMaxDown = 0.16;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "Hatchback_02_Wheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "Hatchback_02_Wheel_2_1";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 1500;
 					maxHandbrakeTorque = 4000;
@@ -990,6 +1216,19 @@ class CfgVehicles
 						travelMaxUp = 0.16;
 						travelMaxDown = 0.16;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_2";
+							inventorySlot = "Hatchback_02_Wheel_1_2";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_2";
+							inventorySlot = "Hatchback_02_Wheel_2_2";
+						};
+					};
 				};
 			};
 		};
@@ -999,7 +1238,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 38;
 		fuelConsumption = 7;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -1054,9 +1293,9 @@ class CfgVehicles
 				reverse = 3.27;
 				ratios[] = {3.8,2.12,1.41,0.96};
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 1220;
 					wheelHubMass = 5;
@@ -1069,8 +1308,21 @@ class CfgVehicles
 						travelMaxUp = 0.07;
 						travelMaxDown = 0.08;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "Sedan_02_Wheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "Sedan_02_Wheel_2_1";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 1040;
 					maxHandbrakeTorque = 2400;
@@ -1088,6 +1340,19 @@ class CfgVehicles
 						damping = 5600;
 						travelMaxUp = 0.1;
 						travelMaxDown = 0.1;
+					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_2";
+							inventorySlot = "Sedan_02_Wheel_1_2";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_2";
+							inventorySlot = "Sedan_02_Wheel_2_2";
+						};
 					};
 				};
 			};
@@ -1098,7 +1363,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 38;
 		fuelConsumption = 7;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -1153,9 +1418,9 @@ class CfgVehicles
 				reverse = 3.27;
 				ratios[] = {3.8,2.12,1.41,0.96};
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 1220;
 					wheelHubMass = 5;
@@ -1168,8 +1433,21 @@ class CfgVehicles
 						travelMaxUp = 0.07;
 						travelMaxDown = 0.08;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "Sedan_02_Wheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "Sedan_02_Wheel_2_1";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 1040;
 					maxHandbrakeTorque = 2400;
@@ -1187,6 +1465,19 @@ class CfgVehicles
 						damping = 5600;
 						travelMaxUp = 0.1;
 						travelMaxDown = 0.1;
+					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_2";
+							inventorySlot = "Sedan_02_Wheel_1_2";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_2";
+							inventorySlot = "Sedan_02_Wheel_2_2";
+						};
 					};
 				};
 			};
@@ -1197,7 +1488,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 38;
 		fuelConsumption = 7;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -1252,9 +1543,9 @@ class CfgVehicles
 				reverse = 3.27;
 				ratios[] = {3.8,2.12,1.41,0.96};
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 1220;
 					wheelHubMass = 5;
@@ -1267,8 +1558,21 @@ class CfgVehicles
 						travelMaxUp = 0.07;
 						travelMaxDown = 0.08;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "Sedan_02_Wheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "Sedan_02_Wheel_2_1";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 1040;
 					maxHandbrakeTorque = 2400;
@@ -1287,6 +1591,19 @@ class CfgVehicles
 						travelMaxUp = 0.1;
 						travelMaxDown = 0.1;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_2";
+							inventorySlot = "Sedan_02_Wheel_1_2";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_2";
+							inventorySlot = "Sedan_02_Wheel_2_2";
+						};
+					};
 				};
 			};
 		};
@@ -1296,7 +1613,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 115;
 		fuelConsumption = 30;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -1356,9 +1673,9 @@ class CfgVehicles
 				ratio = 2.121;
 				type = "DIFFERENTIAL_LOCKED";
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 4700;
 					maxHandbrakeTorque = 10000;
@@ -1377,8 +1694,21 @@ class CfgVehicles
 						travelMaxUp = 0.25;
 						travelMaxDown = 0.25;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "Offroad_02_Wheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "Offroad_02_Wheel_2_1";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 4000;
 					maxHandbrakeTorque = 10000;
@@ -1397,6 +1727,19 @@ class CfgVehicles
 						travelMaxUp = 0.25;
 						travelMaxDown = 0.25;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_2";
+							inventorySlot = "Offroad_02_Wheel_1_2";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_2";
+							inventorySlot = "Offroad_02_Wheel_2_2";
+						};
+					};
 				};
 			};
 		};
@@ -1406,7 +1749,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 120;
 		fuelConsumption = 30;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -1466,9 +1809,9 @@ class CfgVehicles
 				ratio = 0.75;
 				type = "DIFFERENTIAL_LOCKED";
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 9000;
 					wheelHubMass = 25;
@@ -1481,8 +1824,21 @@ class CfgVehicles
 						travelMaxUp = 0.14;
 						travelMaxDown = 0.15;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "Truck_01_Wheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "Truck_01_Wheel_2_1";
+						};
+					};
 				};
-				class Middle
+				class Middle : Rear
 				{
 					maxBrakeTorque = 6200;
 					maxHandbrakeTorque = 12000;
@@ -1501,8 +1857,27 @@ class CfgVehicles
 						travelMaxUp = 0.095;
 						travelMaxDown = 0.125;
 					};
+					class Wheels : Wheels
+					{
+						class Left
+						{
+							inventorySlot = "Truck_01_Wheel_1_2";
+							animTurn = "turnmiddleleft";
+							animRotation = "wheelmiddleleft";
+							animDamper = "damper_1_2";
+							wheelHub = "wheel_1_2_damper_land";
+						};
+						class Right
+						{
+							inventorySlot = "Truck_01_Wheel_2_2";
+							animTurn = "turnmiddletright";
+							animRotation = "wheelmiddleright";
+							animDamper = "damper_2_2";
+							wheelHub = "wheel_2_2_damper_land";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 6200;
 					maxHandbrakeTorque = 12000;
@@ -1520,6 +1895,21 @@ class CfgVehicles
 						damping = 8000;
 						travelMaxUp = 0.095;
 						travelMaxDown = 0.125;
+					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_3";
+							inventorySlot = "Truck_01_Wheel_1_3";
+							wheelHub = "wheel_1_3_damper_land";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_3";
+							inventorySlot = "Truck_01_Wheel_2_3";
+							wheelHub = "wheel_2_3_damper_land";
+						};
 					};
 				};
 			};
@@ -1530,7 +1920,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 120;
 		fuelConsumption = 30;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -1590,9 +1980,9 @@ class CfgVehicles
 				ratio = 0.75;
 				type = "DIFFERENTIAL_LOCKED";
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 9000;
 					wheelHubMass = 25;
@@ -1605,8 +1995,21 @@ class CfgVehicles
 						travelMaxUp = 0.14;
 						travelMaxDown = 0.15;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "Truck_01_Wheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "Truck_01_Wheel_2_1";
+						};
+					};
 				};
-				class Middle
+				class Middle : Rear
 				{
 					maxBrakeTorque = 6200;
 					maxHandbrakeTorque = 12000;
@@ -1625,8 +2028,27 @@ class CfgVehicles
 						travelMaxUp = 0.095;
 						travelMaxDown = 0.125;
 					};
+					class Wheels : Wheels
+					{
+						class Left
+						{
+							inventorySlot = "Truck_01_Wheel_1_2";
+							animTurn = "turnmiddleleft";
+							animRotation = "wheelmiddleleft";
+							animDamper = "damper_1_2";
+							wheelHub = "wheel_1_2_damper_land";
+						};
+						class Right
+						{
+							inventorySlot = "Truck_01_Wheel_2_2";
+							animTurn = "turnmiddletright";
+							animRotation = "wheelmiddleright";
+							animDamper = "damper_2_2";
+							wheelHub = "wheel_2_2_damper_land";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 6200;
 					maxHandbrakeTorque = 12000;
@@ -1644,6 +2066,21 @@ class CfgVehicles
 						damping = 8000;
 						travelMaxUp = 0.095;
 						travelMaxDown = 0.125;
+					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_3";
+							inventorySlot = "Truck_01_Wheel_1_3";
+							wheelHub = "wheel_1_3_damper_land";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_3";
+							inventorySlot = "Truck_01_Wheel_2_3";
+							wheelHub = "wheel_2_3_damper_land";
+						};
 					};
 				};
 			};
@@ -1654,7 +2091,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 120;
 		fuelConsumption = 30;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -1714,9 +2151,9 @@ class CfgVehicles
 				ratio = 0.75;
 				type = "DIFFERENTIAL_LOCKED";
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 9000;
 					wheelHubMass = 25;
@@ -1729,8 +2166,21 @@ class CfgVehicles
 						travelMaxUp = 0.14;
 						travelMaxDown = 0.15;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "Truck_01_Wheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "Truck_01_Wheel_2_1";
+						};
+					};
 				};
-				class Middle
+				class Middle : Rear
 				{
 					maxBrakeTorque = 6200;
 					maxHandbrakeTorque = 12000;
@@ -1749,8 +2199,27 @@ class CfgVehicles
 						travelMaxUp = 0.095;
 						travelMaxDown = 0.125;
 					};
+					class Wheels : Wheels
+					{
+						class Left
+						{
+							inventorySlot = "Truck_01_Wheel_1_2";
+							animTurn = "turnmiddleleft";
+							animRotation = "wheelmiddleleft";
+							animDamper = "damper_1_2";
+							wheelHub = "wheel_1_2_damper_land";
+						};
+						class Right
+						{
+							inventorySlot = "Truck_01_Wheel_2_2";
+							animTurn = "turnmiddletright";
+							animRotation = "wheelmiddleright";
+							animDamper = "damper_2_2";
+							wheelHub = "wheel_2_2_damper_land";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 6200;
 					maxHandbrakeTorque = 12000;
@@ -1768,6 +2237,21 @@ class CfgVehicles
 						damping = 8000;
 						travelMaxUp = 0.095;
 						travelMaxDown = 0.125;
+					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_3";
+							inventorySlot = "Truck_01_Wheel_1_3";
+							wheelHub = "wheel_1_3_damper_land";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_3";
+							inventorySlot = "Truck_01_Wheel_2_3";
+							wheelHub = "wheel_2_3_damper_land";
+						};
 					};
 				};
 			};
@@ -1778,7 +2262,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 120;
 		fuelConsumption = 30;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -1838,9 +2322,9 @@ class CfgVehicles
 				ratio = 0.75;
 				type = "DIFFERENTIAL_LOCKED";
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 9000;
 					wheelHubMass = 25;
@@ -1853,8 +2337,21 @@ class CfgVehicles
 						travelMaxUp = 0.14;
 						travelMaxDown = 0.15;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "Truck_01_Wheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "Truck_01_Wheel_2_1";
+						};
+					};
 				};
-				class Middle
+				class Middle : Rear
 				{
 					maxBrakeTorque = 6200;
 					maxHandbrakeTorque = 12000;
@@ -1873,8 +2370,27 @@ class CfgVehicles
 						travelMaxUp = 0.095;
 						travelMaxDown = 0.125;
 					};
+					class Wheels : Wheels
+					{
+						class Left
+						{
+							inventorySlot = "Truck_01_Wheel_1_2";
+							animTurn = "turnmiddleleft";
+							animRotation = "wheelmiddleleft";
+							animDamper = "damper_1_2";
+							wheelHub = "wheel_1_2_damper_land";
+						};
+						class Right
+						{
+							inventorySlot = "Truck_01_Wheel_2_2";
+							animTurn = "turnmiddletright";
+							animRotation = "wheelmiddleright";
+							animDamper = "damper_2_2";
+							wheelHub = "wheel_2_2_damper_land";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 6200;
 					maxHandbrakeTorque = 12000;
@@ -1892,6 +2408,21 @@ class CfgVehicles
 						damping = 8000;
 						travelMaxUp = 0.095;
 						travelMaxDown = 0.125;
+					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_3";
+							inventorySlot = "Truck_01_Wheel_1_3";
+							wheelHub = "wheel_1_3_damper_land";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_3";
+							inventorySlot = "Truck_01_Wheel_2_3";
+							wheelHub = "wheel_2_3_damper_land";
+						};
 					};
 				};
 			};
@@ -1902,7 +2433,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 120;
 		fuelConsumption = 30;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -1962,9 +2493,9 @@ class CfgVehicles
 				ratio = 0.75;
 				type = "DIFFERENTIAL_LOCKED";
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 9000;
 					wheelHubMass = 25;
@@ -1977,8 +2508,21 @@ class CfgVehicles
 						travelMaxUp = 0.14;
 						travelMaxDown = 0.15;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "Truck_01_Wheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "Truck_01_Wheel_2_1";
+						};
+					};
 				};
-				class Middle
+				class Middle : Rear
 				{
 					maxBrakeTorque = 6200;
 					maxHandbrakeTorque = 12000;
@@ -1997,8 +2541,27 @@ class CfgVehicles
 						travelMaxUp = 0.095;
 						travelMaxDown = 0.125;
 					};
+					class Wheels : Wheels
+					{
+						class Left
+						{
+							inventorySlot = "Truck_01_Wheel_1_2";
+							animTurn = "turnmiddleleft";
+							animRotation = "wheelmiddleleft";
+							animDamper = "damper_1_2";
+							wheelHub = "wheel_1_2_damper_land";
+						};
+						class Right
+						{
+							inventorySlot = "Truck_01_Wheel_2_2";
+							animTurn = "turnmiddletright";
+							animRotation = "wheelmiddleright";
+							animDamper = "damper_2_2";
+							wheelHub = "wheel_2_2_damper_land";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 6200;
 					maxHandbrakeTorque = 12000;
@@ -2016,6 +2579,21 @@ class CfgVehicles
 						damping = 8000;
 						travelMaxUp = 0.095;
 						travelMaxDown = 0.125;
+					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_3";
+							inventorySlot = "Truck_01_Wheel_1_3";
+							wheelHub = "wheel_1_3_damper_land";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_3";
+							inventorySlot = "Truck_01_Wheel_2_3";
+							wheelHub = "wheel_2_3_damper_land";
+						};
 					};
 				};
 			};
@@ -2026,7 +2604,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 120;
 		fuelConsumption = 30;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -2086,9 +2664,9 @@ class CfgVehicles
 				ratio = 0.75;
 				type = "DIFFERENTIAL_LOCKED";
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 9000;
 					wheelHubMass = 25;
@@ -2101,8 +2679,21 @@ class CfgVehicles
 						travelMaxUp = 0.14;
 						travelMaxDown = 0.15;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "Truck_01_Wheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "Truck_01_Wheel_2_1";
+						};
+					};
 				};
-				class Middle
+				class Middle : Rear
 				{
 					maxBrakeTorque = 6200;
 					maxHandbrakeTorque = 12000;
@@ -2121,8 +2712,27 @@ class CfgVehicles
 						travelMaxUp = 0.095;
 						travelMaxDown = 0.125;
 					};
+					class Wheels : Wheels
+					{
+						class Left
+						{
+							inventorySlot = "Truck_01_Wheel_1_2";
+							animTurn = "turnmiddleleft";
+							animRotation = "wheelmiddleleft";
+							animDamper = "damper_1_2";
+							wheelHub = "wheel_1_2_damper_land";
+						};
+						class Right
+						{
+							inventorySlot = "Truck_01_Wheel_2_2";
+							animTurn = "turnmiddletright";
+							animRotation = "wheelmiddleright";
+							animDamper = "damper_2_2";
+							wheelHub = "wheel_2_2_damper_land";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 6200;
 					maxHandbrakeTorque = 12000;
@@ -2140,6 +2750,21 @@ class CfgVehicles
 						damping = 8000;
 						travelMaxUp = 0.095;
 						travelMaxDown = 0.125;
+					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_3";
+							inventorySlot = "Truck_01_Wheel_1_3";
+							wheelHub = "wheel_1_3_damper_land";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_3";
+							inventorySlot = "Truck_01_Wheel_2_3";
+							wheelHub = "wheel_2_3_damper_land";
+						};
 					};
 				};
 			};
@@ -2150,7 +2775,7 @@ class CfgVehicles
 	{
 		fuelCapacity = 120;
 		fuelConsumption = 30;
-		class SimulationModule
+		class SimulationModule : SimulationModule
 		{
 			class Steering
 			{
@@ -2210,9 +2835,9 @@ class CfgVehicles
 				ratio = 0.75;
 				type = "DIFFERENTIAL_LOCKED";
 			};
-			class Axles
+			class Axles : Axles
 			{
-				class Front
+				class Front : Front
 				{
 					maxBrakeTorque = 9000;
 					wheelHubMass = 25;
@@ -2225,8 +2850,21 @@ class CfgVehicles
 						travelMaxUp = 0.14;
 						travelMaxDown = 0.15;
 					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_1";
+							inventorySlot = "Truck_01_Wheel_1_1";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_1";
+							inventorySlot = "Truck_01_Wheel_2_1";
+						};
+					};
 				};
-				class Middle
+				class Middle : Rear
 				{
 					maxBrakeTorque = 6200;
 					maxHandbrakeTorque = 12000;
@@ -2245,8 +2883,27 @@ class CfgVehicles
 						travelMaxUp = 0.095;
 						travelMaxDown = 0.125;
 					};
+					class Wheels : Wheels
+					{
+						class Left
+						{
+							inventorySlot = "Truck_01_Wheel_1_2";
+							animTurn = "turnmiddleleft";
+							animRotation = "wheelmiddleleft";
+							animDamper = "damper_1_2";
+							wheelHub = "wheel_1_2_damper_land";
+						};
+						class Right
+						{
+							inventorySlot = "Truck_01_Wheel_2_2";
+							animTurn = "turnmiddletright";
+							animRotation = "wheelmiddleright";
+							animDamper = "damper_2_2";
+							wheelHub = "wheel_2_2_damper_land";
+						};
+					};
 				};
-				class Rear
+				class Rear : Rear
 				{
 					maxBrakeTorque = 6200;
 					maxHandbrakeTorque = 12000;
@@ -2264,6 +2921,21 @@ class CfgVehicles
 						damping = 8000;
 						travelMaxUp = 0.095;
 						travelMaxDown = 0.125;
+					};
+					class Wheels : Wheels
+					{
+						class Left : Left
+						{
+							animDamper = "damper_1_3";
+							inventorySlot = "Truck_01_Wheel_1_3";
+							wheelHub = "wheel_1_3_damper_land";
+						};
+						class Right : Right
+						{
+							animDamper = "damper_2_3";
+							inventorySlot = "Truck_01_Wheel_2_3";
+							wheelHub = "wheel_2_3_damper_land";
+						};
 					};
 				};
 			};
