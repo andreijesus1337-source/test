@@ -23,11 +23,6 @@
 //
 // Требует DZ_Vehicles_Wheeled (часть игры, идёт с сервером по
 // умолчанию - отдельно ставить не нужно).
-//
-// Вложенные классы (SimulationModule/Axles/Front/Rear/Wheels/Left/
-// Right) переоткрыты с явным ": ИмяКласса" - один в один как в
-// оригинальном файле игры (а не просто голым именем), чтобы
-// исключить любые сомнения в правильности слияния конфига.
 // ============================================================
 
 class CfgPatches
@@ -79,7 +74,7 @@ class CfgVehicles
 			};
 			class Throttle
 			{
-				reactionTime = 0.35;
+				reactionTime = 0.1;
 				defaultThrust = 0.65;
 				gentleThrust = 0.55;
 				turboCoef = 6.0;
@@ -103,19 +98,19 @@ class CfgVehicles
 			drive = "DRIVE_RWD";
 			class Engine
 			{
-				torqueCurve[] = {400,0,1000,157,1700,183,2500,187,4500,147,6000,0};
-				inertia = 0.45;
+				torqueCurve[] = {400,0,1000,157,1700,250,2500,350,4500,500,6000,800};
+				inertia = 0.35;
 				frictionTorque = 130;
-				rollingFriction = 1.5;
-				viscousFriction = 0.5;
-				rpmIdle = 900;
-				rpmMin = 1000;
+				rollingFriction = 3;
+				viscousFriction = 1.5;
+				rpmIdle = 1300;
+				rpmMin = 1500;
 				rpmClutch = 1250;
-				rpmRedline = 4700;
+				rpmRedline = 12700;
 			};
 			class Clutch
 			{
-				maxTorqueTransfer = 400;
+				maxTorqueTransfer = 800;
 				uncoupleTime = 0.3;
 				coupleTime = 0.3;
 			};
@@ -123,7 +118,7 @@ class CfgVehicles
 			{
 				type = "GEARBOX_MANUAL";
 				reverse = 3.51;
-				ratios[] = {3.5,2.26,1.45,1.0};
+				ratios[] = {5.5,4.26,3.0,3.0};
 			};
 			class Axles : Axles
 			{
@@ -163,7 +158,7 @@ class CfgVehicles
 					class Differential
 					{
 						ratio = 4.1;
-						type = "DIFFERENTIAL_OPEN";
+						type = "DIFFERENTIAL_LOCKED";
 					};
 					class Suspension
 					{
@@ -2437,7 +2432,7 @@ class CfgVehicles
 		{
 			class Steering
 			{
-				maxSteeringAngle = 35;
+				maxSteeringAngle = 45;
 				increaseSpeed[] = {0,25,50,15};
 				decreaseSpeed[] = {0,50,50,40};
 				centeringSpeed[] = {0,25,50,15};
@@ -2447,7 +2442,7 @@ class CfgVehicles
 				reactionTime = 0.2;
 				defaultThrust = 0.8;
 				gentleThrust = 0.6;
-				turboCoef = 1.15;
+				turboCoef = 10.15;
 				gentleCoef = 0.5;
 			};
 			class Brake
@@ -2466,7 +2461,7 @@ class CfgVehicles
 			drive = "DRIVE_642";
 			class Engine
 			{
-				torqueCurve[] = {525,0,1000,330,1400,340,1900,300,2500,100,3000,0};
+				torqueCurve[] = {525,1000,1000,1000,1400,1000,1900,5000,2500,5000,3000,5000};
 				inertia = 3.25;
 				frictionTorque = 100;
 				rollingFriction = 3;
@@ -2474,11 +2469,11 @@ class CfgVehicles
 				rpmIdle = 650;
 				rpmMin = 750;
 				rpmClutch = 850;
-				rpmRedline = 2400;
+				rpmRedline = 5400;
 			};
 			class Clutch
 			{
-				maxTorqueTransfer = 720;
+				maxTorqueTransfer = 5020;
 				uncoupleTime = 0.2;
 				coupleTime = 0.65;
 			};
@@ -2486,7 +2481,7 @@ class CfgVehicles
 			{
 				type = "GEARBOX_MANUAL";
 				reverse = 6.28;
-				ratios[] = {6.19,3.13,1.75,1.0};
+				ratios[] = {2.19,3.13,1.75,2.0};
 			};
 			class CentralDifferential
 			{
@@ -2789,7 +2784,7 @@ class CfgVehicles
 				reactionTime = 0.2;
 				defaultThrust = 0.8;
 				gentleThrust = 0.6;
-				turboCoef = 1.15;
+				turboCoef = 3.15;
 				gentleCoef = 0.5;
 			};
 			class Brake
@@ -2808,7 +2803,7 @@ class CfgVehicles
 			drive = "DRIVE_642";
 			class Engine
 			{
-				torqueCurve[] = {525,0,1000,330,1400,340,1900,300,2500,100,3000,0};
+				torqueCurve[] = {525,200,1000,300,1400,840,1900,1500,2500,1800,3000,2000};
 				inertia = 3.25;
 				frictionTorque = 100;
 				rollingFriction = 3;
@@ -2816,11 +2811,11 @@ class CfgVehicles
 				rpmIdle = 650;
 				rpmMin = 750;
 				rpmClutch = 850;
-				rpmRedline = 2400;
+				rpmRedline = 6400;
 			};
 			class Clutch
 			{
-				maxTorqueTransfer = 720;
+				maxTorqueTransfer = 5000;
 				uncoupleTime = 0.2;
 				coupleTime = 0.65;
 			};
@@ -2828,7 +2823,7 @@ class CfgVehicles
 			{
 				type = "GEARBOX_MANUAL";
 				reverse = 6.28;
-				ratios[] = {6.19,3.13,1.75,1.0};
+				ratios[] = {3.19,4.13,5.75,5.0};
 			};
 			class CentralDifferential
 			{
