@@ -1,0 +1,13 @@
+name = "BRDK_Mutants_FIX";
+description = "Патч-конфиг для мутантов/зомби BRDK — урон в ближнем бою, живучесть по зонам тела и параметры атак вынесены в один файл поверх оригинального мода, без изменения его файлов.";
+picture = "";
+logo = "";
+logoSmall = "";
+logoOver = "";
+tooltip = "BRDK_Mutants_FIX";
+overview = "Требует оригинальные PBO BRDK (creatures/dickerS/dickerXL/zmb) и переопределяет их параметры теми же именами классов.";
+action = "";
+actionName = "";
+hideName = 1;
+hidePicture = 1;
+dependencies[] = {"World"};
