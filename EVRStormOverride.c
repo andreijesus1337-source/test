@@ -44,8 +44,10 @@ class EVRFogZoneConstants
 	// Шанс кратковременной "потери контроля" (обморок/паника) за тик (0..1)
 	static const float PANIC_CHANCE = 0.15;
 
-	// Сколько секунд длится потеря контроля
-	static const float PANIC_DURATION = 4.0;
+	// Сколько шока "сажаем" за раз при потере контроля (сажает стат Shock,
+	// движок сам вырубает игрока при низком шоке и сам же поднимает шок
+	// со временем - длительность обморока управляется игрой, не нами)
+	static const float PANIC_SHOCK_DAMAGE = 80.0;
 
 	// Classname'ы туманных объектов из RZ_Anomaly, которыми набивается зона.
 	// Список специально с повтором плотных вариантов - чтобы туман был гуще.
@@ -182,11 +184,17 @@ modded class EVRStorm
 				}
 			}
 
-			// шанс кратковременной потери контроля (вместо "суицида" - обморок/паника)
+			// шанс кратковременной потери контроля (вместо "суицида" - обморок/паника).
+			// ФИКС: "player.SetUnconscious(true)" - такого публичного метода в этом
+			// движке нет ("Undefined function"). Вместо кастомного вкл/выкл обморока -
+			// роняем игроку стат Shock тем же DecreaseHealth, что и урон по HP выше
+			// (Shock - такая же "глобальная" зона здоровья, как Health/Blood - та
+			// самая, что в DamageApplied у патронов). Дойдёт до нуля - игрок вырубится
+			// штатной игровой логикой, очнётся тоже штатно (шок сам восстанавливается
+			// со временем) - свой таймер "разбудить" не нужен.
 			bool panic = false;
-			if (!player.IsUnconscious() && Math.RandomFloat01() < EVRFogZoneConstants.PANIC_CHANCE) {
-				player.SetUnconscious(true);
-				GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(EVR_WakeUpPlayer, (int)(EVRFogZoneConstants.PANIC_DURATION * 1000), false, player);
+			if (Math.RandomFloat01() < EVRFogZoneConstants.PANIC_CHANCE) {
+				player.DecreaseHealth("", "Shock", EVRFogZoneConstants.PANIC_SHOCK_DAMAGE);
 				panic = true;
 			}
 
@@ -197,12 +205,6 @@ modded class EVRStorm
 		}
 	}
 
-	void EVR_WakeUpPlayer(PlayerBase player)
-	{
-		if (player && player.IsUnconscious()) {
-			player.SetUnconscious(false);
-		}
-	}
 	// -----------------------------------------------------------
 	// ГДЕ появляется сам шар (аномалия). Это m_Position/m_AnomalyPosition,
 	// задаётся через GetEventPosition() - вызывается один раз в
