@@ -78,6 +78,16 @@ modded enum ERPCs
 	RPC_EVR_FOG_EFFECT
 }
 
+// ============================================================
+// НОВОЕ: сирена в начале шторма. Требует отдельный маленький аддон
+// EVRSiren_FIX (регистрирует EVR_Siren_SoundSet из evr_siren.ogg) -
+// его нужно поставить рядом с этим скриптом.
+// ============================================================
+class EVRSirenConstants
+{
+	static const string SIREN_SOUNDSET = "EVR_Siren_SoundSet";
+};
+
 modded class EVRStorm
 {
 	protected bool m_EVR_FogInitialized = false;
@@ -233,7 +243,18 @@ modded class EVRStorm
 		GetGame().GetWorld().GetDate(year, month, day, hour, minute);
 
 		int index = (hour * 60 + minute) % ORB_SPAWN_POSITIONS.Count();
-		return ORB_SPAWN_POSITIONS[index];
+		vector pos = ORB_SPAWN_POSITIONS[index];
+
+		// НОВОЕ: сирена в начале шторма. GetEventPosition() гарантированно
+		// вызывается ровно один раз в конструкторе - причём НЕЗАВИСИМО на
+		// сервере и на каждом клиенте отдельно (см. комментарий выше) -
+		// значит именно здесь безопасно проиграть звук локально каждому
+		// игроку сразу, без RPC и без риска рассинхрона.
+		if (GetGame().IsClient()) {
+			SEffectManager.PlaySound(EVRSirenConstants.SIREN_SOUNDSET, pos);
+		}
+
+		return pos;
 	}
 
 	// Место, куда шар телепортирует объекты (m_TeleportPosition).

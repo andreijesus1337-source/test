@@ -1,0 +1,13 @@
+name = "EVRSiren_FIX";
+description = "Звуковой ассет сирены (evr_siren.ogg) для скрипта EVRStormOverride.c — играет предупреждающую сирену в начале выброса EVRStorm.";
+picture = "";
+logo = "";
+logoSmall = "";
+logoOver = "";
+tooltip = "EVRSiren_FIX";
+overview = "Регистрирует EVR_Siren_SoundSet, который вызывается из EVRStormOverride.c при старте шторма.";
+action = "";
+actionName = "";
+hideName = 1;
+hidePicture = 1;
+dependencies[] = {"World"};
