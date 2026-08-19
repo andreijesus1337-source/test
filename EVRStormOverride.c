@@ -467,24 +467,21 @@ modded class PlayerBase
 		}
 	}
 
-	// panic = в этот тик у игрока также сработал обморок (см. сервер) -
-	// используется, чтобы не проигрывать тряску поверх уже идущего обморока
+	// panic - в этот тик у игрока также сработал обморок (см. сервер)
+	//
+	// ФИКС: тряска камеры ("GetGame().GetCameraMan()") убрана - такого
+	// метода в этом движке нет ("Undefined function 'DayZGame.GetCameraMan'").
+	// Это была единственная непроверенная часть всего файла (сразу
+	// предупреждал) - без доступа к компилятору движка тут легко гадать
+	// бесконечно, а не собраться с первого раза важнее красивой тряски.
+	// Если найдёте у себя в скриптах игры (grep по 4_World на "Shake"/
+	// "AddShake"/"CameraShake") реальный рабочий метод - скажите его
+	// точную сигнатуру, верну тряску одной строкой.
 	void EVR_ApplyFogClientEffects(bool panic)
 	{
 		// звук "голосов" - не позиционный, играет у самого игрока
 		if (EVRFogZoneConstants.SCREAM_SOUNDSET != "") {
 			SEffectManager.PlaySound(EVRFogZoneConstants.SCREAM_SOUNDSET, GetPosition());
-		}
-
-		if (panic) {
-			return;
-		}
-
-		// тряска камеры + лёгкое потемнение - лучшая попытка без
-		// возможности проверить компиляцией здесь, см. предупреждение выше
-		DayZPlayerCamera1stPerson cam1p = DayZPlayerCamera1stPerson.Cast(GetGame().GetCameraMan());
-		if (cam1p) {
-			cam1p.AddShake(2.5, 0.6, 8);
 		}
 	}
 };
