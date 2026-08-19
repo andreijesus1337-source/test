@@ -71,12 +71,19 @@ class EVRFogZoneConstants
 };
 
 // Отдельный RPC-канал сервер -> конкретный игрок для клиентских эффектов
-// (звук/тряска/темнота). modded enum - чтобы не выбирать вручную номер
-// и не пересечься с другими модами.
-modded enum ERPCs
+// (звук/тряска/темнота).
+//
+// ФИКС: изначально было "modded enum ERPCs { RPC_EVR_FOG_EFFECT }" -
+// этот движок modded enum не поддерживает ("Expected 'enum', not a
+// 'modded'" при компиляции). Вместо этого - обычная числовая константа,
+// стандартный паттерн для кастомных RPC в DayZ-модах. Число подобрано
+// заведомо большим/нестандартным, чтобы не пересечься с ID из других
+// модов - если всё же пересечётся (в логе будет что-то не то на RPC
+// с этим типом), просто поменяйте число здесь на другое.
+class EVRRPCConstants
 {
-	RPC_EVR_FOG_EFFECT
-}
+	static const int RPC_EVR_FOG_EFFECT = 22571;
+};
 
 // ============================================================
 // НОВОЕ: сирена в начале шторма. Требует отдельный маленький аддон
@@ -185,7 +192,7 @@ modded class EVRStorm
 
 			// звук/тряска/темнота - клиентский RPC конкретному игроку
 			if (player.GetIdentity()) {
-				GetGame().RPCSingleParam(player, ERPCs.RPC_EVR_FOG_EFFECT, new Param1<bool>(panic), true, player.GetIdentity());
+				GetGame().RPCSingleParam(player, EVRRPCConstants.RPC_EVR_FOG_EFFECT, new Param1<bool>(panic), true, player.GetIdentity());
 			}
 		}
 	}
@@ -449,7 +456,7 @@ modded class PlayerBase
 	{
 		super.OnRPC(sender, rpc_type, ctx);
 
-		if (rpc_type == ERPCs.RPC_EVR_FOG_EFFECT) {
+		if (rpc_type == EVRRPCConstants.RPC_EVR_FOG_EFFECT) {
 			Param1<bool> data;
 			if (!ctx.Read(data)) {
 				return;
