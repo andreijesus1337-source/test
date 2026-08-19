@@ -16,8 +16,176 @@ modded class EVRConstants
 	static const float ANOMALY_KILL_RADIUS = 1000;
 }
 
+// ============================================================
+// НОВОЕ: туманная зона вокруг шара (RZ_Anomaly + собственные эффекты).
+//
+// Центр зоны - m_AnomalyPosition (та же точка, где реально стоит шар
+// в ЭТОМ конкретном выбросе - Тисы или вторая точка, см. GetEventPosition()
+// выше). Отдельно позиционировать зону не нужно - она "едет" вместе с
+// шаром автоматически, потому что и вход в телепорт, и туман завязаны
+// на одну и ту же переменную.
+//
+// Все параметры - здесь, крутить одним файлом.
+// ============================================================
+class EVRFogZoneConstants
+{
+	// Радиус тумана вокруг шара, метры
+	static const float FOG_ZONE_RADIUS = 60;
+
+	// Как часто (сек) применяется тик урона/эффектов, пока игрок в зоне
+	static const float TICK_INTERVAL = 4.0;
+
+	// Урон здоровью за один тик (при TICK_INTERVAL=4 это ~DAMAGE_PER_TICK/4 в сек)
+	static const float DAMAGE_PER_TICK = 8.0;
+
+	// Шанс выронить оружие/предмет из рук за один тик (0..1)
+	static const float DROP_ITEM_CHANCE = 0.12;
+
+	// Шанс кратковременной "потери контроля" (обморок/паника) за тик (0..1)
+	static const float PANIC_CHANCE = 0.15;
+
+	// Сколько секунд длится потеря контроля
+	static const float PANIC_DURATION = 4.0;
+
+	// Classname'ы туманных объектов из RZ_Anomaly, которыми набивается зона.
+	// Список специально с повтором плотных вариантов - чтобы туман был гуще.
+	static const ref array<string> FOG_OBJECTS = {
+		"RZ_Tyman_P32_Static",
+		"RZ_Tyman_P32_OchMedl",
+		"RZ_Tyman_P16_OchMedl",
+		"RZ_Anom_NeboMG"
+	};
+
+	// Сколько объектов тумана раскидать по зоне (случайно вокруг центра)
+	static const int FOG_OBJECT_COUNT = 10;
+
+	// Подстраховка: если шторм не почистит объекты тумана штатно,
+	// удалить их принудительно через столько секунд после спавна
+	static const float FOG_LIFETIME_SEC = 1800;
+
+	// soundset для "голосов"/криков, играющих у игрока в зоне - НЕ позиционный
+	// звук от шара, а тот, что слышит сам игрок. Должен существовать в игре
+	// или в одном из ваших модов (звуковых ассетов мы не создаём) - замените
+	// на реальное имя soundset'а, иначе звук просто не заиграет.
+	static const string SCREAM_SOUNDSET = "EVRFog_Voices_SoundSet";
+};
+
+// Отдельный RPC-канал сервер -> конкретный игрок для клиентских эффектов
+// (звук/тряска/темнота). modded enum - чтобы не выбирать вручную номер
+// и не пересечься с другими модами.
+modded enum ERPCs
+{
+	RPC_EVR_FOG_EFFECT
+}
+
 modded class EVRStorm
 {
+	protected bool m_EVR_FogInitialized = false;
+	protected ref array<Object> m_EVR_FogObjects = new array<Object>;
+
+	// -----------------------------------------------------------
+	// Расставляет объекты тумана вокруг m_AnomalyPosition. Вызывается
+	// один раз при первом тике этого конкретного шторма (см. хук в
+	// UpdateServer() ниже) - то есть уже ПОСЛЕ того, как позиция шара
+	// определена, значит попадёт туда же, где стоит шар в этот раз.
+	// -----------------------------------------------------------
+	void EVR_SpawnFogZone()
+	{
+		if (!GetGame().IsServer()) {
+			return;
+		}
+
+		int count = EVRFogZoneConstants.FOG_OBJECTS.Count();
+		if (count == 0) {
+			return;
+		}
+
+		for (int i = 0; i < EVRFogZoneConstants.FOG_OBJECT_COUNT; i++) {
+			string cls = EVRFogZoneConstants.FOG_OBJECTS[i % count];
+			float angle = Math.RandomFloat(0, 6.283185);
+			float radius = Math.RandomFloat(0, EVRFogZoneConstants.FOG_ZONE_RADIUS * 0.8);
+			vector offset = Vector(Math.Cos(angle) * radius, 0, Math.Sin(angle) * radius);
+			vector spawnPos = m_AnomalyPosition + offset;
+
+			Object obj = GetGame().CreateObject(cls, spawnPos, false, true, true);
+			if (obj) {
+				m_EVR_FogObjects.Insert(obj);
+			}
+		}
+
+		// подстраховка на случай, если у самого шторма нет своего "конца",
+		// на который можно было бы повесить чистку
+		GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(EVR_CleanupFog, (int)(EVRFogZoneConstants.FOG_LIFETIME_SEC * 1000), false);
+	}
+
+	void EVR_CleanupFog()
+	{
+		foreach (Object obj : m_EVR_FogObjects) {
+			if (obj) {
+				GetGame().ObjectDelete(obj);
+			}
+		}
+		m_EVR_FogObjects.Clear();
+	}
+
+	// -----------------------------------------------------------
+	// Тик зоны - раз в TICK_INTERVAL сек, независимо от частоты
+	// UpdateServer(). Проверяет ВСЕХ игроков на сервере (не только
+	// тех, кто уже в узкой зоне поимки шара) и применяет эффекты
+	// каждому, кто в радиусе FOG_ZONE_RADIUS.
+	// -----------------------------------------------------------
+	void EVR_FogZoneTick()
+	{
+		if (!GetGame().IsServer()) {
+			return;
+		}
+
+		array<Man> players = new array<Man>;
+		GetGame().GetPlayers(players);
+
+		foreach (Man man : players) {
+			PlayerBase player = PlayerBase.Cast(man);
+			if (!player || !player.IsAlive()) {
+				continue;
+			}
+
+			float dist = vector.Distance(player.GetPosition(), m_AnomalyPosition);
+			if (dist > EVRFogZoneConstants.FOG_ZONE_RADIUS) {
+				continue;
+			}
+
+			// урон по HP
+			player.DecreaseHealth("", "", EVRFogZoneConstants.DAMAGE_PER_TICK);
+
+			// шанс выронить предмет из рук
+			if (Math.RandomFloat01() < EVRFogZoneConstants.DROP_ITEM_CHANCE) {
+				ItemBase inHands = ItemBase.Cast(player.GetHumanInventory().GetEntityInHands());
+				if (inHands) {
+					player.GetHumanInventory().DropEntity(InventoryMode.SERVER, player, inHands);
+				}
+			}
+
+			// шанс кратковременной потери контроля (вместо "суицида" - обморок/паника)
+			bool panic = false;
+			if (!player.IsUnconscious() && Math.RandomFloat01() < EVRFogZoneConstants.PANIC_CHANCE) {
+				player.SetUnconscious(true);
+				GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(EVR_WakeUpPlayer, (int)(EVRFogZoneConstants.PANIC_DURATION * 1000), false, player);
+				panic = true;
+			}
+
+			// звук/тряска/темнота - клиентский RPC конкретному игроку
+			if (player.GetIdentity()) {
+				GetGame().RPCSingleParam(player, ERPCs.RPC_EVR_FOG_EFFECT, new Param1<bool>(panic), true, player.GetIdentity());
+			}
+		}
+	}
+
+	void EVR_WakeUpPlayer(PlayerBase player)
+	{
+		if (player && player.IsUnconscious()) {
+			player.SetUnconscious(false);
+		}
+	}
 	// -----------------------------------------------------------
 	// ГДЕ появляется сам шар (аномалия). Это m_Position/m_AnomalyPosition,
 	// задаётся через GetEventPosition() - вызывается один раз в
@@ -84,6 +252,15 @@ modded class EVRStorm
 	// -----------------------------------------------------------
 	override void UpdateServer()
 	{
+		// НОВОЕ: один раз при первом тике этого шторма - расставить туман
+		// вокруг уже определённой m_AnomalyPosition и запустить отдельный
+		// периодический тик зоны (не зависящий от частоты UpdateServer()).
+		if (!m_EVR_FogInitialized) {
+			m_EVR_FogInitialized = true;
+			EVR_SpawnFogZone();
+			GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(EVR_FogZoneTick, (int)(EVRFogZoneConstants.TICK_INTERVAL * 1000), true);
+		}
+
 		if (m_CanTeleport && EVRConstants.ALLOW_TELEPORTING) {
 			array<Object> objects = {};
 			array<CargoBase> cargos = {};
@@ -232,3 +409,53 @@ modded class EVRStorm
 		return null;
 	}
 }
+
+// ============================================================
+// Клиентская сторона тумана: получает RPC_EVR_FOG_EFFECT от сервера
+// и включает звук/тряску/потемнение экрана ЛОКАЛЬНО у конкретного
+// игрока (не позиционно, а "у него в голове").
+//
+// ВАЖНО: тряска камеры и потемнение экрана (PPE) сделаны через API,
+// который не проверялся компиляцией в этой сессии - если после сборки
+// в логе будет ошибка именно в этом блоке (не в остальном файле),
+// пришлите её мне, поправлю под точную версию API вашего сервера.
+// Урон/выпадение предмета/обморок (серверная часть выше) на этот
+// риск не завязаны и должны работать как есть.
+// ============================================================
+modded class PlayerBase
+{
+	override void OnRPC(PlayerIdentity sender, int rpc_type, ParamsReadContext ctx)
+	{
+		super.OnRPC(sender, rpc_type, ctx);
+
+		if (rpc_type == ERPCs.RPC_EVR_FOG_EFFECT) {
+			Param1<bool> data;
+			if (!ctx.Read(data)) {
+				return;
+			}
+			EVR_ApplyFogClientEffects(data.param1);
+		}
+	}
+
+	// panic = в этот тик у игрока также сработал обморок (см. сервер) -
+	// используется, чтобы не проигрывать тряску поверх уже идущего обморока
+	void EVR_ApplyFogClientEffects(bool panic)
+	{
+		// звук "голосов" - не позиционный, играет у самого игрока
+		if (EVRFogZoneConstants.SCREAM_SOUNDSET != "") {
+			SEffectManager.PlaySound(EVRFogZoneConstants.SCREAM_SOUNDSET, GetPosition());
+		}
+
+		if (panic) {
+			return;
+		}
+
+		// тряска камеры + лёгкое потемнение - лучшая попытка без
+		// возможности проверить компиляцией здесь, см. предупреждение выше
+		DayZPlayerCamera1stPerson cam1p = DayZPlayerCamera1stPerson.Cast(GetGame().GetCameraMan());
+		if (cam1p) {
+			cam1p.AddShake(2.5, 0.6, 8);
+		}
+	}
+};
+
