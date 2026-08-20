@@ -1,0 +1,17 @@
+{
+	"radius": 60,
+	"tickIntervalSeconds": 4.0,
+	"damagePerTick": 8.0,
+	"dropItemChance": 0.12,
+	"panicChance": 0.15,
+	"panicShockDamage": 80.0,
+	"fogObjects": [
+		"RZ_Tyman_P32_Static",
+		"RZ_Tyman_P32_OchMedl",
+		"RZ_Tyman_P16_OchMedl",
+		"RZ_Anom_NeboMG"
+	],
+	"fogObjectCount": 10,
+	"fogGroundOffset": 0.2,
+	"fogLifetimeSeconds": 1800
+}

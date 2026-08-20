@@ -21,37 +21,40 @@ modded class EVRConstants
 //
 // Центр зоны - m_AnomalyPosition (та же точка, где реально стоит шар
 // в ЭТОМ конкретном выбросе - Тисы или вторая точка, см. GetEventPosition()
-// выше). Отдельно позиционировать зону не нужно - она "едет" вместе с
+// ниже). Отдельно позиционировать зону не нужно - она "едет" вместе с
 // шаром автоматически, потому что и вход в телепорт, и туман завязаны
 // на одну и ту же переменную.
 //
-// Все параметры - здесь, крутить одним файлом.
+// ФИКС: раньше это были static const в скрипте - теперь загружается
+// из JSON ($profile:EVRStorm\FogZone.json), см. EVR_LoadFogZoneConfig
+// в EVRStorm ниже. Значения по умолчанию (если файла ещё нет) - те же,
+// что были раньше.
 // ============================================================
-class EVRFogZoneConstants
+class EVRFogZoneConfig
 {
 	// Радиус тумана вокруг шара, метры
-	static const float FOG_ZONE_RADIUS = 60;
+	float radius = 60;
 
 	// Как часто (сек) применяется тик урона/эффектов, пока игрок в зоне
-	static const float TICK_INTERVAL = 4.0;
+	float tickIntervalSeconds = 4.0;
 
-	// Урон здоровью за один тик (при TICK_INTERVAL=4 это ~DAMAGE_PER_TICK/4 в сек)
-	static const float DAMAGE_PER_TICK = 8.0;
+	// Урон здоровью за один тик
+	float damagePerTick = 8.0;
 
 	// Шанс выронить оружие/предмет из рук за один тик (0..1)
-	static const float DROP_ITEM_CHANCE = 0.12;
+	float dropItemChance = 0.12;
 
 	// Шанс кратковременной "потери контроля" (обморок/паника) за тик (0..1)
-	static const float PANIC_CHANCE = 0.15;
+	float panicChance = 0.15;
 
 	// Сколько шока "сажаем" за раз при потере контроля (сажает стат Shock,
 	// движок сам вырубает игрока при низком шоке и сам же поднимает шок
 	// со временем - длительность обморока управляется игрой, не нами)
-	static const float PANIC_SHOCK_DAMAGE = 80.0;
+	float panicShockDamage = 80.0;
 
 	// Classname'ы туманных объектов из RZ_Anomaly, которыми набивается зона.
 	// Список специально с повтором плотных вариантов - чтобы туман был гуще.
-	static const ref array<string> FOG_OBJECTS = {
+	ref array<string> fogObjects = {
 		"RZ_Tyman_P32_Static",
 		"RZ_Tyman_P32_OchMedl",
 		"RZ_Tyman_P16_OchMedl",
@@ -59,21 +62,15 @@ class EVRFogZoneConstants
 	};
 
 	// Сколько объектов тумана раскидать по зоне (случайно вокруг центра)
-	static const int FOG_OBJECT_COUNT = 10;
+	int fogObjectCount = 10;
 
-	// Насколько приподнять туман над рельефом, метры (каждый объект теперь
+	// Насколько приподнять туман над рельефом, метры (каждый объект
 	// ставится по реальной высоте земли в своей точке + этот отступ)
-	static const float FOG_GROUND_OFFSET = 0.2;
+	float fogGroundOffset = 0.2;
 
 	// Подстраховка: если шторм не почистит объекты тумана штатно,
 	// удалить их принудительно через столько секунд после спавна
-	static const float FOG_LIFETIME_SEC = 1800;
-
-	// soundset для "голосов"/криков, играющих у игрока в зоне - НЕ позиционный
-	// звук от шара, а тот, что слышит сам игрок. Должен существовать в игре
-	// или в одном из ваших модов (звуковых ассетов мы не создаём) - замените
-	// на реальное имя soundset'а, иначе звук просто не заиграет.
-	static const string SCREAM_SOUNDSET = "EVRFog_Voices_SoundSet";
+	float fogLifetimeSeconds = 1800;
 };
 
 // Отдельный RPC-канал сервер -> конкретный игрок для клиентских эффектов
@@ -93,25 +90,39 @@ class EVRRPCConstants
 };
 
 // ============================================================
-// НОВОЕ: сирена в начале шторма. Требует отдельный маленький аддон
-// EVRSiren_FIX (регистрирует EVR_Siren_SoundSet из evr_siren.ogg) -
-// его нужно поставить рядом с этим скриптом.
+// НОВОЕ: имена soundset'ов - сирена в начале шторма (требует отдельный
+// маленький аддон EVRSiren_FIX, который регистрирует EVR_Siren_SoundSet
+// из evr_siren.ogg - его нужно поставить рядом с этим скриптом) и
+// "голоса" в тумане.
+//
+// ФИКС: раньше это были static const в скрипте - теперь тоже грузится
+// из JSON ($profile:EVRStorm\Sounds.json). Имена соundset'ов нужны
+// ОБЕИМ сторонам (сервер решает когда играть, но реально проигрывает
+// звук клиент) - поэтому сервер передаёт их клиенту прямо в RPC вместе
+// с сигналом "играй звук", а не рассчитывает, что у клиента есть свой
+// такой же JSON (у клиента нет доступа к $profile: сервера).
 // ============================================================
-class EVRSirenConstants
+class EVRSoundsConfig
 {
-	static const string SIREN_SOUNDSET = "EVR_Siren_SoundSet";
+	// soundset сирены в начале шторма - не позиционный, слышен везде
+	string sirenSoundset = "EVR_Siren_SoundSet";
+
+	// soundset "голосов"/криков в тумане - НЕ позиционный звук от шара,
+	// а тот, что слышит сам игрок. Должен существовать в игре или в
+	// одном из ваших модов (звуковых ассетов мы не создаём) - замените
+	// на реальное имя soundset'а, иначе звук просто не заиграет.
+	string screamSoundset = "EVRFog_Voices_SoundSet";
 };
 
 // ============================================================
 // НОВОЕ: мутанты BRDK, спавнящиеся при входе игрока в туман.
 //
-// Настройки - в JSON-файле, а не в этом скрипте: путь ниже
-// (EVR_FOG_MUTANTS_CONFIG_PATH), $profile: - это папка профиля
-// сервера (та же, где логи/БД). Если файла нет - при первом старте
-// шторма он создастся сам с настройками по умолчанию (см. класс
-// ниже) - дальше правьте JSON и меняйте, пересобирать PBO не нужно,
-// правки подхватятся при следующем перезапуске сервера (грузится
-// один раз при старте, не на лету).
+// Настройки - в JSON-файле $profile:EVRStorm\Mutants.json (папка
+// EVRStorm - там же лежат FogZone.json и Sounds.json, см. ниже).
+// Если файла нет - при первом старте шторма он создастся сам с
+// настройками по умолчанию (см. класс ниже) - дальше правьте JSON,
+// пересобирать PBO не нужно, правки подхватятся при следующем
+// перезапуске сервера (грузится один раз при старте, не на лету).
 // ============================================================
 class EVRFogMutantsConfig
 {
@@ -153,31 +164,56 @@ class EVRFogMutantsConfig
 
 modded class EVRStorm
 {
-	static const string EVR_FOG_MUTANTS_CONFIG_PATH = "$profile:EVRFogMutants.json";
+	// Папка EVRStorm в профиле сервера (та же папка, где логи/БД CE) -
+	// создаётся сама при первом сохранении любого из трёх файлов ниже.
+	static const string EVR_CONFIG_FOLDER = "$profile:EVRStorm";
+	static const string EVR_FOGZONE_CONFIG_PATH = "$profile:EVRStorm\FogZone.json";
+	static const string EVR_SOUNDS_CONFIG_PATH = "$profile:EVRStorm\Sounds.json";
+	static const string EVR_MUTANTS_CONFIG_PATH = "$profile:EVRStorm\Mutants.json";
 
 	protected bool m_EVR_FogInitialized = false;
 	protected ref array<Object> m_EVR_FogObjects = new array<Object>;
+	protected ref EVRFogZoneConfig m_EVR_FogZoneConfig;
+	protected ref EVRSoundsConfig m_EVR_SoundsConfig;
 	protected ref EVRFogMutantsConfig m_EVR_MutantsConfig;
 	protected ref map<PlayerBase, bool> m_EVR_PlayerInZone = new map<PlayerBase, bool>;
 	protected ref map<PlayerBase, float> m_EVR_PlayerMutantCooldown = new map<PlayerBase, float>;
 
 	// -----------------------------------------------------------
-	// Грузит EVRFogMutants.json один раз. Если файла ещё нет (первый
-	// запуск) - создаёт его с настройками по умолчанию, чтобы было что
-	// редактировать.
+	// Грузит все три JSON-файла из папки EVRStorm один раз. Если файла
+	// ещё нет (первый запуск) - создаёт его с настройками по умолчанию,
+	// чтобы было что редактировать. Вызывается один раз - при первом
+	// тике первого шторма после старта сервера (см. UpdateServer() ниже);
+	// правки в JSON подхватываются только при следующем перезапуске
+	// сервера, не на лету.
 	// -----------------------------------------------------------
-	void EVR_LoadMutantsConfig()
+	void EVR_LoadAllConfigs()
 	{
-		if (!GetGame().IsServer() || m_EVR_MutantsConfig) {
+		if (!GetGame().IsServer() || m_EVR_FogZoneConfig) {
 			return;
 		}
 
-		m_EVR_MutantsConfig = new EVRFogMutantsConfig;
+		MakeDirectory(EVR_CONFIG_FOLDER);
 
-		if (FileExist(EVR_FOG_MUTANTS_CONFIG_PATH)) {
-			JsonFileLoader<EVRFogMutantsConfig>.JsonLoadFile(EVR_FOG_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig);
+		m_EVR_FogZoneConfig = new EVRFogZoneConfig;
+		if (FileExist(EVR_FOGZONE_CONFIG_PATH)) {
+			JsonFileLoader<EVRFogZoneConfig>.JsonLoadFile(EVR_FOGZONE_CONFIG_PATH, m_EVR_FogZoneConfig);
 		} else {
-			JsonFileLoader<EVRFogMutantsConfig>.JsonSaveFile(EVR_FOG_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig);
+			JsonFileLoader<EVRFogZoneConfig>.JsonSaveFile(EVR_FOGZONE_CONFIG_PATH, m_EVR_FogZoneConfig);
+		}
+
+		m_EVR_SoundsConfig = new EVRSoundsConfig;
+		if (FileExist(EVR_SOUNDS_CONFIG_PATH)) {
+			JsonFileLoader<EVRSoundsConfig>.JsonLoadFile(EVR_SOUNDS_CONFIG_PATH, m_EVR_SoundsConfig);
+		} else {
+			JsonFileLoader<EVRSoundsConfig>.JsonSaveFile(EVR_SOUNDS_CONFIG_PATH, m_EVR_SoundsConfig);
+		}
+
+		m_EVR_MutantsConfig = new EVRFogMutantsConfig;
+		if (FileExist(EVR_MUTANTS_CONFIG_PATH)) {
+			JsonFileLoader<EVRFogMutantsConfig>.JsonLoadFile(EVR_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig);
+		} else {
+			JsonFileLoader<EVRFogMutantsConfig>.JsonSaveFile(EVR_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig);
 		}
 	}
 
@@ -193,15 +229,15 @@ modded class EVRStorm
 			return;
 		}
 
-		int count = EVRFogZoneConstants.FOG_OBJECTS.Count();
+		int count = m_EVR_FogZoneConfig.fogObjects.Count();
 		if (count == 0) {
 			return;
 		}
 
-		for (int i = 0; i < EVRFogZoneConstants.FOG_OBJECT_COUNT; i++) {
-			string cls = EVRFogZoneConstants.FOG_OBJECTS[i % count];
+		for (int i = 0; i < m_EVR_FogZoneConfig.fogObjectCount; i++) {
+			string cls = m_EVR_FogZoneConfig.fogObjects[i % count];
 			float angle = Math.RandomFloat(0, 6.283185);
-			float radius = Math.RandomFloat(0, EVRFogZoneConstants.FOG_ZONE_RADIUS * 0.8);
+			float radius = Math.RandomFloat(0, m_EVR_FogZoneConfig.radius * 0.8);
 			vector offset = Vector(Math.Cos(angle) * radius, 0, Math.Sin(angle) * radius);
 			vector spawnPos = m_AnomalyPosition + offset;
 
@@ -210,7 +246,7 @@ modded class EVRStorm
 			// либо висел в воздухе, либо уходил под землю по краям зоны.
 			// Берём реальную высоту рельефа в конкретной (x,z) точке отдельно
 			// для каждого объекта.
-			spawnPos[1] = GetGame().SurfaceY(spawnPos[0], spawnPos[2]) + EVRFogZoneConstants.FOG_GROUND_OFFSET;
+			spawnPos[1] = GetGame().SurfaceY(spawnPos[0], spawnPos[2]) + m_EVR_FogZoneConfig.fogGroundOffset;
 
 			Object obj = GetGame().CreateObject(cls, spawnPos, false, true, true);
 			if (obj) {
@@ -228,7 +264,7 @@ modded class EVRStorm
 
 		// подстраховка на случай, если у самого шторма нет своего "конца",
 		// на который можно было бы повесить чистку
-		GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(EVR_CleanupFog, (int)(EVRFogZoneConstants.FOG_LIFETIME_SEC * 1000), false);
+		GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(EVR_CleanupFog, (int)(m_EVR_FogZoneConfig.fogLifetimeSeconds * 1000), false);
 	}
 
 	// -----------------------------------------------------------
@@ -259,10 +295,9 @@ modded class EVRStorm
 			if (!player || !player.GetIdentity()) {
 				continue;
 			}
-			// параметр не нужен по смыслу, но передаём тот же тип Param, что и
-			// в уже проверенном (компилируется без ошибок) RPC тумана выше -
-			// чтобы не пробовать новую, непроверенную сигнатуру вызова
-			GetGame().RPCSingleParam(player, EVRRPCConstants.RPC_EVR_SIREN, new Param1<bool>(true), true, player.GetIdentity());
+			// передаём имя soundset'а прямо в RPC - у клиента нет доступа
+			// к $profile: сервера, откуда взят m_EVR_SoundsConfig
+			GetGame().RPCSingleParam(player, EVRRPCConstants.RPC_EVR_SIREN, new Param1<string>(m_EVR_SoundsConfig.sirenSoundset), true, player.GetIdentity());
 		}
 	}
 
@@ -298,7 +333,7 @@ modded class EVRStorm
 			}
 
 			float dist = vector.Distance(player.GetPosition(), m_AnomalyPosition);
-			bool inZone = dist <= EVRFogZoneConstants.FOG_ZONE_RADIUS;
+			bool inZone = dist <= m_EVR_FogZoneConfig.radius;
 
 			bool wasInZone = false;
 			if (m_EVR_PlayerInZone.Contains(player)) {
@@ -317,10 +352,10 @@ modded class EVRStorm
 			}
 
 			// урон по HP
-			player.DecreaseHealth("", "", EVRFogZoneConstants.DAMAGE_PER_TICK);
+			player.DecreaseHealth("", "", m_EVR_FogZoneConfig.damagePerTick);
 
 			// шанс выронить предмет из рук
-			if (Math.RandomFloat01() < EVRFogZoneConstants.DROP_ITEM_CHANCE) {
+			if (Math.RandomFloat01() < m_EVR_FogZoneConfig.dropItemChance) {
 				ItemBase inHands = ItemBase.Cast(player.GetHumanInventory().GetEntityInHands());
 				if (inHands) {
 					player.GetHumanInventory().DropEntity(InventoryMode.SERVER, player, inHands);
@@ -336,21 +371,23 @@ modded class EVRStorm
 			// штатной игровой логикой, очнётся тоже штатно (шок сам восстанавливается
 			// со временем) - свой таймер "разбудить" не нужен.
 			bool panic = false;
-			if (Math.RandomFloat01() < EVRFogZoneConstants.PANIC_CHANCE) {
-				player.DecreaseHealth("", "Shock", EVRFogZoneConstants.PANIC_SHOCK_DAMAGE);
+			if (Math.RandomFloat01() < m_EVR_FogZoneConfig.panicChance) {
+				player.DecreaseHealth("", "Shock", m_EVR_FogZoneConfig.panicShockDamage);
 				panic = true;
 			}
 
-			// звук/тряска/темнота - клиентский RPC конкретному игроку
+			// звук/тряска/темнота - клиентский RPC конкретному игроку.
+			// Передаём screamSoundset тем же RPC - у клиента нет доступа
+			// к $profile: сервера, откуда взят m_EVR_SoundsConfig.
 			if (player.GetIdentity()) {
-				GetGame().RPCSingleParam(player, EVRRPCConstants.RPC_EVR_FOG_EFFECT, new Param1<bool>(panic), true, player.GetIdentity());
+				GetGame().RPCSingleParam(player, EVRRPCConstants.RPC_EVR_FOG_EFFECT, new Param2<bool, string>(panic, m_EVR_SoundsConfig.screamSoundset), true, player.GetIdentity());
 			}
 		}
 	}
 
 	// -----------------------------------------------------------
 	// Спавн мутантов BRDK рядом с игроком, вошедшим в туман. Настройки -
-	// из EVRFogMutantsConfig (JSON, см. EVR_LoadMutantsConfig выше).
+	// из EVRFogMutantsConfig (JSON, см. EVR_LoadAllConfigs выше).
 	// -----------------------------------------------------------
 	void EVR_TrySpawnMutants(PlayerBase player)
 	{
@@ -464,10 +501,10 @@ modded class EVRStorm
 		// периодический тик зоны (не зависящий от частоты UpdateServer()).
 		if (!m_EVR_FogInitialized) {
 			m_EVR_FogInitialized = true;
-			EVR_LoadMutantsConfig();
+			EVR_LoadAllConfigs();
 			EVR_SpawnFogZone();
 			EVR_BroadcastSiren();
-			GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(EVR_FogZoneTick, (int)(EVRFogZoneConstants.TICK_INTERVAL * 1000), true);
+			GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(EVR_FogZoneTick, (int)(m_EVR_FogZoneConfig.tickIntervalSeconds * 1000), true);
 		}
 
 		if (m_CanTeleport && EVRConstants.ALLOW_TELEPORTING) {
@@ -637,24 +674,34 @@ modded class PlayerBase
 	{
 		super.OnRPC(sender, rpc_type, ctx);
 
+		// ФИКС: soundset'ы теперь настраиваются через JSON на сервере
+		// (EVRSoundsConfig, $profile:EVRStorm\Sounds.json) - клиент не
+		// имеет доступа к $profile: сервера, поэтому имя soundset'а
+		// сервер передаёт прямо в параметрах RPC, а не берёт из
+		// какой-то общей константы.
 		if (rpc_type == EVRRPCConstants.RPC_EVR_FOG_EFFECT) {
-			Param1<bool> data;
+			Param2<bool, string> data;
 			if (!ctx.Read(data)) {
 				return;
 			}
-			EVR_ApplyFogClientEffects(data.param1);
+			EVR_ApplyFogClientEffects(data.param1, data.param2);
 		}
 
 		if (rpc_type == EVRRPCConstants.RPC_EVR_SIREN) {
+			Param1<string> data;
+			if (!ctx.Read(data)) {
+				return;
+			}
 			// GetPosition() тут - позиция ЭТОГО игрока (получателя RPC),
 			// не позиция шара - звук всегда играет "у себя", без затухания.
-			if (EVRSirenConstants.SIREN_SOUNDSET != "") {
-				SEffectManager.PlaySound(EVRSirenConstants.SIREN_SOUNDSET, GetPosition());
+			if (data.param1 != "") {
+				SEffectManager.PlaySound(data.param1, GetPosition());
 			}
 		}
 	}
 
 	// panic - в этот тик у игрока также сработал обморок (см. сервер)
+	// soundset - имя scream-soundset'а, пришедшее от сервера (см. выше)
 	//
 	// ФИКС: тряска камеры ("GetGame().GetCameraMan()") убрана - такого
 	// метода в этом движке нет ("Undefined function 'DayZGame.GetCameraMan'").
@@ -664,11 +711,11 @@ modded class PlayerBase
 	// Если найдёте у себя в скриптах игры (grep по 4_World на "Shake"/
 	// "AddShake"/"CameraShake") реальный рабочий метод - скажите его
 	// точную сигнатуру, верну тряску одной строкой.
-	void EVR_ApplyFogClientEffects(bool panic)
+	void EVR_ApplyFogClientEffects(bool panic, string soundset)
 	{
 		// звук "голосов" - не позиционный, играет у самого игрока
-		if (EVRFogZoneConstants.SCREAM_SOUNDSET != "") {
-			SEffectManager.PlaySound(EVRFogZoneConstants.SCREAM_SOUNDSET, GetPosition());
+		if (soundset != "") {
+			SEffectManager.PlaySound(soundset, GetPosition());
 		}
 	}
 };
