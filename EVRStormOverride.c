@@ -89,6 +89,7 @@ class EVRFogZoneConstants
 class EVRRPCConstants
 {
 	static const int RPC_EVR_FOG_EFFECT = 22571;
+	static const int RPC_EVR_SIREN = 22572;
 };
 
 // ============================================================
@@ -139,6 +140,14 @@ modded class EVRStorm
 
 			Object obj = GetGame().CreateObject(cls, spawnPos, false, true, true);
 			if (obj) {
+				// ФИКС: "туман тянется в одну сторону" - модели RZ_Tyman скорее
+				// всего несимметричные (плоскость/облако с центром не посередине),
+				// и CreateObject() ставит их все с одинаковым (нулевым) поворотом -
+				// визуально выглядит так, будто весь туман "растёт" в одну сторону
+				// от каждой точки. Крутим каждый объект на случайный угол по Y,
+				// чтобы разлёт выглядел равномерным облаком, а не рядом одинаково
+				// повёрнутых кусков.
+				obj.SetOrientation(Vector(Math.RandomFloat(0, 360), 0, 0));
 				m_EVR_FogObjects.Insert(obj);
 			}
 		}
@@ -146,6 +155,41 @@ modded class EVRStorm
 		// подстраховка на случай, если у самого шторма нет своего "конца",
 		// на который можно было бы повесить чистку
 		GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(EVR_CleanupFog, (int)(EVRFogZoneConstants.FOG_LIFETIME_SEC * 1000), false);
+	}
+
+	// -----------------------------------------------------------
+	// Сирена в начале шторма - рассылается ВСЕМ подключённым игрокам
+	// один раз, тем же RPC-механизмом, что уже проверен на тумане.
+	//
+	// ФИКС: раньше сирену пытались проиграть в GetEventPosition()
+	// (клиентская сторона, "вызывается независимо на каждом клиенте")
+	// - но это не сработало вообще (звук пропал полностью), похоже,
+	// эта функция на клиенте либо не вызывается так, как предполагалось
+	// изначальным комментарием, либо GetGame().GetPlayer() там ещё
+	// не готов. Вместо гаданий - сервер сам явно рассылает RPC каждому
+	// игроку, ровно тем же способом, что уже гарантированно доходит
+	// (см. EVR_FogZoneTick ниже) - там, где сервер точно знает, что
+	// игрок подключён и у него есть identity.
+	// -----------------------------------------------------------
+	void EVR_BroadcastSiren()
+	{
+		if (!GetGame().IsServer()) {
+			return;
+		}
+
+		array<Man> players = new array<Man>;
+		GetGame().GetPlayers(players);
+
+		foreach (Man man : players) {
+			PlayerBase player = PlayerBase.Cast(man);
+			if (!player || !player.GetIdentity()) {
+				continue;
+			}
+			// параметр не нужен по смыслу, но передаём тот же тип Param, что и
+			// в уже проверенном (компилируется без ошибок) RPC тумана выше -
+			// чтобы не пробовать новую, непроверенную сигнатуру вызова
+			GetGame().RPCSingleParam(player, EVRRPCConstants.RPC_EVR_SIREN, new Param1<bool>(true), true, player.GetIdentity());
+		}
 	}
 
 	void EVR_CleanupFog()
@@ -263,28 +307,7 @@ modded class EVRStorm
 		GetGame().GetWorld().GetDate(year, month, day, hour, minute);
 
 		int index = (hour * 60 + minute) % ORB_SPAWN_POSITIONS.Count();
-		vector pos = ORB_SPAWN_POSITIONS[index];
-
-		// НОВОЕ: сирена в начале шторма. GetEventPosition() гарантированно
-		// вызывается ровно один раз в конструкторе - причём НЕЗАВИСИМО на
-		// сервере и на каждом клиенте отдельно (см. комментарий выше) -
-		// значит именно здесь безопасно проиграть звук локально каждому
-		// игроку сразу, без RPC и без риска рассинхрона.
-		//
-		// ФИКС: слышно было только рядом с шаром - потому что играли звук
-		// В ПОЗИЦИИ ШАРА (pos), а движок всё равно приглушает звук по
-		// расстоянию от игрока до этой точки, что бы ни было настроено в
-		// is2D конфига. Чтобы сирена звучала одинаково по всей карте как
-		// оповещение - играем её В ПОЗИЦИИ САМОГО ИГРОКА (расстояние до
-		// себя всегда ноль, затухания просто неоткуда взяться).
-		if (GetGame().IsClient()) {
-			PlayerBase localPlayer = PlayerBase.Cast(GetGame().GetPlayer());
-			if (localPlayer) {
-				SEffectManager.PlaySound(EVRSirenConstants.SIREN_SOUNDSET, localPlayer.GetPosition());
-			}
-		}
-
-		return pos;
+		return ORB_SPAWN_POSITIONS[index];
 	}
 
 	// Место, куда шар телепортирует объекты (m_TeleportPosition).
@@ -309,6 +332,7 @@ modded class EVRStorm
 		if (!m_EVR_FogInitialized) {
 			m_EVR_FogInitialized = true;
 			EVR_SpawnFogZone();
+			EVR_BroadcastSiren();
 			GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(EVR_FogZoneTick, (int)(EVRFogZoneConstants.TICK_INTERVAL * 1000), true);
 		}
 
@@ -485,6 +509,14 @@ modded class PlayerBase
 				return;
 			}
 			EVR_ApplyFogClientEffects(data.param1);
+		}
+
+		if (rpc_type == EVRRPCConstants.RPC_EVR_SIREN) {
+			// GetPosition() тут - позиция ЭТОГО игрока (получателя RPC),
+			// не позиция шара - звук всегда играет "у себя", без затухания.
+			if (EVRSirenConstants.SIREN_SOUNDSET != "") {
+				SEffectManager.PlaySound(EVRSirenConstants.SIREN_SOUNDSET, GetPosition());
+			}
 		}
 	}
 
