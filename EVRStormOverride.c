@@ -61,6 +61,10 @@ class EVRFogZoneConstants
 	// Сколько объектов тумана раскидать по зоне (случайно вокруг центра)
 	static const int FOG_OBJECT_COUNT = 10;
 
+	// Насколько приподнять туман над рельефом, метры (каждый объект теперь
+	// ставится по реальной высоте земли в своей точке + этот отступ)
+	static const float FOG_GROUND_OFFSET = 0.2;
+
 	// Подстраховка: если шторм не почистит объекты тумана штатно,
 	// удалить их принудительно через столько секунд после спавна
 	static const float FOG_LIFETIME_SEC = 1800;
@@ -125,6 +129,13 @@ modded class EVRStorm
 			float radius = Math.RandomFloat(0, EVRFogZoneConstants.FOG_ZONE_RADIUS * 0.8);
 			vector offset = Vector(Math.Cos(angle) * radius, 0, Math.Sin(angle) * radius);
 			vector spawnPos = m_AnomalyPosition + offset;
+
+			// ФИКС: раньше вся зона стояла на ОДНОЙ высоте m_AnomalyPosition[1]
+			// (высота именно точки шара), поэтому на неровном рельефе туман
+			// либо висел в воздухе, либо уходил под землю по краям зоны.
+			// Берём реальную высоту рельефа в конкретной (x,z) точке отдельно
+			// для каждого объекта.
+			spawnPos[1] = GetGame().SurfaceY(spawnPos[0], spawnPos[2]) + EVRFogZoneConstants.FOG_GROUND_OFFSET;
 
 			Object obj = GetGame().CreateObject(cls, spawnPos, false, true, true);
 			if (obj) {
@@ -259,8 +270,18 @@ modded class EVRStorm
 		// сервере и на каждом клиенте отдельно (см. комментарий выше) -
 		// значит именно здесь безопасно проиграть звук локально каждому
 		// игроку сразу, без RPC и без риска рассинхрона.
+		//
+		// ФИКС: слышно было только рядом с шаром - потому что играли звук
+		// В ПОЗИЦИИ ШАРА (pos), а движок всё равно приглушает звук по
+		// расстоянию от игрока до этой точки, что бы ни было настроено в
+		// is2D конфига. Чтобы сирена звучала одинаково по всей карте как
+		// оповещение - играем её В ПОЗИЦИИ САМОГО ИГРОКА (расстояние до
+		// себя всегда ноль, затухания просто неоткуда взяться).
 		if (GetGame().IsClient()) {
-			SEffectManager.PlaySound(EVRSirenConstants.SIREN_SOUNDSET, pos);
+			PlayerBase localPlayer = PlayerBase.Cast(GetGame().GetPlayer());
+			if (localPlayer) {
+				SEffectManager.PlaySound(EVRSirenConstants.SIREN_SOUNDSET, localPlayer.GetPosition());
+			}
 		}
 
 		return pos;
