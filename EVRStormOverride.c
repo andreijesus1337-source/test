@@ -195,26 +195,29 @@ modded class EVRStorm
 
 		MakeDirectory(EVR_CONFIG_FOLDER);
 
+		// ФИКС: было "if (FileExist(path)) Load(); else Save();" - папка
+		// EVRStorm создавалась (значит функция реально вызывалась), но
+		// сами .json внутри не появлялись и без единой ошибки в RPT.
+		// Похоже, FileExist() тут не отличает "файла нет" от "папка есть",
+		// и код всегда уходил в ветку Load() - а загрузка из
+		// несуществующего файла молча ничего не делает (не ошибка,
+		// просто нет эффекта). Убрали зависимость от FileExist() совсем:
+		// сначала пробуем загрузить (если файла нет - объект просто
+		// останется со значениями по умолчанию), затем ВСЕГДА сохраняем -
+		// это гарантированно кладёт файл на диск при первом запуске и не
+		// портит уже сделанные вами правки при следующих (пересохранит
+		// то же самое, что подгрузил).
 		m_EVR_FogZoneConfig = new EVRFogZoneConfig;
-		if (FileExist(EVR_FOGZONE_CONFIG_PATH)) {
-			JsonFileLoader<EVRFogZoneConfig>.JsonLoadFile(EVR_FOGZONE_CONFIG_PATH, m_EVR_FogZoneConfig);
-		} else {
-			JsonFileLoader<EVRFogZoneConfig>.JsonSaveFile(EVR_FOGZONE_CONFIG_PATH, m_EVR_FogZoneConfig);
-		}
+		JsonFileLoader<EVRFogZoneConfig>.JsonLoadFile(EVR_FOGZONE_CONFIG_PATH, m_EVR_FogZoneConfig);
+		JsonFileLoader<EVRFogZoneConfig>.JsonSaveFile(EVR_FOGZONE_CONFIG_PATH, m_EVR_FogZoneConfig);
 
 		m_EVR_SoundsConfig = new EVRSoundsConfig;
-		if (FileExist(EVR_SOUNDS_CONFIG_PATH)) {
-			JsonFileLoader<EVRSoundsConfig>.JsonLoadFile(EVR_SOUNDS_CONFIG_PATH, m_EVR_SoundsConfig);
-		} else {
-			JsonFileLoader<EVRSoundsConfig>.JsonSaveFile(EVR_SOUNDS_CONFIG_PATH, m_EVR_SoundsConfig);
-		}
+		JsonFileLoader<EVRSoundsConfig>.JsonLoadFile(EVR_SOUNDS_CONFIG_PATH, m_EVR_SoundsConfig);
+		JsonFileLoader<EVRSoundsConfig>.JsonSaveFile(EVR_SOUNDS_CONFIG_PATH, m_EVR_SoundsConfig);
 
 		m_EVR_MutantsConfig = new EVRFogMutantsConfig;
-		if (FileExist(EVR_MUTANTS_CONFIG_PATH)) {
-			JsonFileLoader<EVRFogMutantsConfig>.JsonLoadFile(EVR_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig);
-		} else {
-			JsonFileLoader<EVRFogMutantsConfig>.JsonSaveFile(EVR_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig);
-		}
+		JsonFileLoader<EVRFogMutantsConfig>.JsonLoadFile(EVR_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig);
+		JsonFileLoader<EVRFogMutantsConfig>.JsonSaveFile(EVR_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig);
 	}
 
 	// -----------------------------------------------------------
