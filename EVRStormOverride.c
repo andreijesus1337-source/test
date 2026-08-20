@@ -679,23 +679,28 @@ modded class PlayerBase
 		// имеет доступа к $profile: сервера, поэтому имя soundset'а
 		// сервер передаёт прямо в параметрах RPC, а не берёт из
 		// какой-то общей константы.
+		// ФИКС: "Multiple declaration of variable 'data'" - в этом движке
+		// if-блоки не создают отдельную область видимости переменных, так
+		// что две одноимённые локальные "data" в соседних if - ошибка
+		// компиляции, даже если каждая объявлена в своём блоке. Разные
+		// имена под каждый RPC.
 		if (rpc_type == EVRRPCConstants.RPC_EVR_FOG_EFFECT) {
-			Param2<bool, string> data;
-			if (!ctx.Read(data)) {
+			Param2<bool, string> fogData;
+			if (!ctx.Read(fogData)) {
 				return;
 			}
-			EVR_ApplyFogClientEffects(data.param1, data.param2);
+			EVR_ApplyFogClientEffects(fogData.param1, fogData.param2);
 		}
 
 		if (rpc_type == EVRRPCConstants.RPC_EVR_SIREN) {
-			Param1<string> data;
-			if (!ctx.Read(data)) {
+			Param1<string> sirenData;
+			if (!ctx.Read(sirenData)) {
 				return;
 			}
 			// GetPosition() тут - позиция ЭТОГО игрока (получателя RPC),
 			// не позиция шара - звук всегда играет "у себя", без затухания.
-			if (data.param1 != "") {
-				SEffectManager.PlaySound(data.param1, GetPosition());
+			if (sirenData.param1 != "") {
+				SEffectManager.PlaySound(sirenData.param1, GetPosition());
 			}
 		}
 	}
