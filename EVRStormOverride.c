@@ -102,10 +102,84 @@ class EVRSirenConstants
 	static const string SIREN_SOUNDSET = "EVR_Siren_SoundSet";
 };
 
+// ============================================================
+// НОВОЕ: мутанты BRDK, спавнящиеся при входе игрока в туман.
+//
+// Настройки - в JSON-файле, а не в этом скрипте: путь ниже
+// (EVR_FOG_MUTANTS_CONFIG_PATH), $profile: - это папка профиля
+// сервера (та же, где логи/БД). Если файла нет - при первом старте
+// шторма он создастся сам с настройками по умолчанию (см. класс
+// ниже) - дальше правьте JSON и меняйте, пересобирать PBO не нужно,
+// правки подхватятся при следующем перезапуске сервера (грузится
+// один раз при старте, не на лету).
+// ============================================================
+class EVRFogMutantsConfig
+{
+	// Включить/выключить спавн мутантов в тумане вообще
+	bool enabled = true;
+
+	// Шанс заспавнить мутантов при ВХОДЕ игрока в зону тумана (0..1) -
+	// не каждый тик, а один раз на каждый заход (см. reentryCooldownSeconds)
+	float spawnChance = 0.35;
+
+	// Сколько мутантов спавнить за раз (случайно между min и max)
+	int minMutants = 1;
+	int maxMutants = 3;
+
+	// На каком расстоянии от игрока спавнить, метры (не в упор,
+	// но и не за пределами тумана)
+	float spawnRadiusMin = 8;
+	float spawnRadiusMax = 20;
+
+	// Не спавнить мутантов этому же игроку повторно чаще, чем раз в
+	// столько секунд - даже если он выйдет и снова зайдёт в туман
+	float reentryCooldownSeconds = 300;
+
+	// Из какого списота classname'ов выбирать (по умолчанию - все 30
+	// мутантов из BRDK_Mutants_FIX). Требует, чтобы BRDK был установлен
+	// на сервере - сам список никак не проверяем, просто зовём
+	// CreateObject() по имени.
+	ref array<string> mutantClassnames = {
+		"BRDK_Giant_zmb", "BRDK_Faceless_zmb", "BRDK_Witch_ZMB", "BRDK_Alien_zmb",
+		"BRDK_Brigadier_zmb", "BRDK_Buffed_zmb", "BRDK_Mortimer_zmb", "BRDK_Mutagen_zmb",
+		"BRDK_PoliceMan_zmb", "BRDK_Priest_zmb", "BRDK_Mechanic_zmb", "BRDK_LabAssistant_zmb",
+		"BRDK_Scientist_01_zmb", "BRDK_BioSuit_YELLOW_zmb", "BRDK_lizard_mut",
+		"BRDK_Comrad_zmb", "BRDK_Comrad2_zmb", "BRDK_Comrad3_zmb", "BRDK_FamSoldier_zmb",
+		"BRDK_AlienNomouth_crs", "BRDK_AlienNomouth_red_crs", "BRDK_AlienNomouth_Green_crs",
+		"BRDK_Alienna_crs", "BRDK_Hybrid_crs", "BRDK_Swamper_crs", "BRDK_Cripple_crs",
+		"BRDK_Cripple_2_crs", "BRDK_Cripple_3_crs", "BRDK_Dikker20_crs", "BRDK_SelkhamDemon_crs"
+	};
+};
+
 modded class EVRStorm
 {
+	static const string EVR_FOG_MUTANTS_CONFIG_PATH = "$profile:EVRFogMutants.json";
+
 	protected bool m_EVR_FogInitialized = false;
 	protected ref array<Object> m_EVR_FogObjects = new array<Object>;
+	protected ref EVRFogMutantsConfig m_EVR_MutantsConfig;
+	protected ref map<PlayerBase, bool> m_EVR_PlayerInZone = new map<PlayerBase, bool>;
+	protected ref map<PlayerBase, float> m_EVR_PlayerMutantCooldown = new map<PlayerBase, float>;
+
+	// -----------------------------------------------------------
+	// Грузит EVRFogMutants.json один раз. Если файла ещё нет (первый
+	// запуск) - создаёт его с настройками по умолчанию, чтобы было что
+	// редактировать.
+	// -----------------------------------------------------------
+	void EVR_LoadMutantsConfig()
+	{
+		if (!GetGame().IsServer() || m_EVR_MutantsConfig) {
+			return;
+		}
+
+		m_EVR_MutantsConfig = new EVRFogMutantsConfig;
+
+		if (FileExist(EVR_FOG_MUTANTS_CONFIG_PATH)) {
+			JsonFileLoader<EVRFogMutantsConfig>.JsonLoadFile(EVR_FOG_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig);
+		} else {
+			JsonFileLoader<EVRFogMutantsConfig>.JsonSaveFile(EVR_FOG_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig);
+		}
+	}
 
 	// -----------------------------------------------------------
 	// Расставляет объекты тумана вокруг m_AnomalyPosition. Вызывается
@@ -224,8 +298,22 @@ modded class EVRStorm
 			}
 
 			float dist = vector.Distance(player.GetPosition(), m_AnomalyPosition);
-			if (dist > EVRFogZoneConstants.FOG_ZONE_RADIUS) {
+			bool inZone = dist <= EVRFogZoneConstants.FOG_ZONE_RADIUS;
+
+			bool wasInZone = false;
+			if (m_EVR_PlayerInZone.Contains(player)) {
+				wasInZone = m_EVR_PlayerInZone.Get(player);
+			}
+			m_EVR_PlayerInZone.Set(player, inZone);
+
+			if (!inZone) {
 				continue;
+			}
+
+			// НОВОЕ: ровно в момент ВХОДА в зону (не каждый тик, пока стоит
+			// внутри) - шанс заспавнить мутантов BRDK рядом с игроком.
+			if (!wasInZone) {
+				EVR_TrySpawnMutants(player);
 			}
 
 			// урон по HP
@@ -258,6 +346,51 @@ modded class EVRStorm
 				GetGame().RPCSingleParam(player, EVRRPCConstants.RPC_EVR_FOG_EFFECT, new Param1<bool>(panic), true, player.GetIdentity());
 			}
 		}
+	}
+
+	// -----------------------------------------------------------
+	// Спавн мутантов BRDK рядом с игроком, вошедшим в туман. Настройки -
+	// из EVRFogMutantsConfig (JSON, см. EVR_LoadMutantsConfig выше).
+	// -----------------------------------------------------------
+	void EVR_TrySpawnMutants(PlayerBase player)
+	{
+		if (!m_EVR_MutantsConfig || !m_EVR_MutantsConfig.enabled) {
+			return;
+		}
+
+		// повторный кулдаун конкретно этому игроку, даже если он выйдет
+		// и снова зайдёт в туман раньше времени
+		float now = GetGame().GetTime();
+		if (m_EVR_PlayerMutantCooldown.Contains(player)) {
+			float last = m_EVR_PlayerMutantCooldown.Get(player);
+			if (now - last < m_EVR_MutantsConfig.reentryCooldownSeconds * 1000) {
+				return;
+			}
+		}
+
+		if (Math.RandomFloat01() >= m_EVR_MutantsConfig.spawnChance) {
+			return;
+		}
+
+		int classCount = m_EVR_MutantsConfig.mutantClassnames.Count();
+		if (classCount == 0) {
+			return;
+		}
+
+		int amount = Math.RandomInt(m_EVR_MutantsConfig.minMutants, m_EVR_MutantsConfig.maxMutants + 1);
+
+		for (int i = 0; i < amount; i++) {
+			string cls = m_EVR_MutantsConfig.mutantClassnames[Math.RandomInt(0, classCount)];
+			float angle = Math.RandomFloat(0, 6.283185);
+			float radius = Math.RandomFloat(m_EVR_MutantsConfig.spawnRadiusMin, m_EVR_MutantsConfig.spawnRadiusMax);
+			vector offset = Vector(Math.Cos(angle) * radius, 0, Math.Sin(angle) * radius);
+			vector spawnPos = player.GetPosition() + offset;
+			spawnPos[1] = GetGame().SurfaceY(spawnPos[0], spawnPos[2]);
+
+			GetGame().CreateObject(cls, spawnPos, false, true, true);
+		}
+
+		m_EVR_PlayerMutantCooldown.Set(player, now);
 	}
 
 	// -----------------------------------------------------------
@@ -331,6 +464,7 @@ modded class EVRStorm
 		// периодический тик зоны (не зависящий от частоты UpdateServer()).
 		if (!m_EVR_FogInitialized) {
 			m_EVR_FogInitialized = true;
+			EVR_LoadMutantsConfig();
 			EVR_SpawnFogZone();
 			EVR_BroadcastSiren();
 			GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(EVR_FogZoneTick, (int)(EVRFogZoneConstants.TICK_INTERVAL * 1000), true);
