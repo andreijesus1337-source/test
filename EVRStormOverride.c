@@ -90,6 +90,75 @@ class EVRRPCConstants
 };
 
 // ============================================================
+// ФИКС: встроенный JsonFileLoader<T> в этой сборке движка не пишет
+// файлы на диск (проверено: и путь верный, и штатная остановка сервера
+// не помогла - FileExist() внутри игры врёт "true", а на диске пусто).
+// Автор TraderPlus столкнулся с тем же самым и в своём коде тоже
+// закомментировал вызов JsonFileLoader, заменив его на собственный
+// загрузчик поверх низкоуровневых функций OpenFile/FGets/FPrintln/
+// CloseFile + JsonSerializer - это те самые примитивы, на которых
+// реально работают другие моды этого сервера (TraderPlus, StashSearch,
+// VZP и т.д. - видно по их логам, что конфиги у них читаются). Делаем
+// свой аналог по той же схеме вместо ненадёжного generic-класса.
+// ============================================================
+class EVRJsonLoader<Class T>
+{
+	static bool LoadFromFile(string path, out T data)
+	{
+		if (!FileExist(path)) {
+			Print("[EVRStorm] EVRJsonLoader: file does not exist: " + path);
+			return false;
+		}
+
+		FileHandle handle = OpenFile(path, FileMode.READ);
+		if (!handle) {
+			Print("[EVRStorm] EVRJsonLoader: OpenFile(READ) failed: " + path);
+			return false;
+		}
+
+		string content = "";
+		string line;
+		while (FGets(handle, line) >= 0) {
+			content += line;
+		}
+		CloseFile(handle);
+
+		JsonSerializer js = new JsonSerializer();
+		string error;
+		if (!js.ReadFromString(data, content, error)) {
+			Print("[EVRStorm] EVRJsonLoader: ReadFromString failed for " + path + ": " + error);
+			return false;
+		}
+
+		Print("[EVRStorm] EVRJsonLoader: loaded OK from " + path);
+		return true;
+	}
+
+	static bool SaveToFile(string path, T data)
+	{
+		JsonSerializer js = new JsonSerializer();
+		string content;
+		string error;
+		if (!js.WriteToString(data, true, content, error)) {
+			Print("[EVRStorm] EVRJsonLoader: WriteToString failed for " + path + ": " + error);
+			return false;
+		}
+
+		FileHandle handle = OpenFile(path, FileMode.WRITE);
+		if (!handle) {
+			Print("[EVRStorm] EVRJsonLoader: OpenFile(WRITE) failed: " + path);
+			return false;
+		}
+
+		FPrintln(handle, content);
+		CloseFile(handle);
+
+		Print("[EVRStorm] EVRJsonLoader: saved OK to " + path + ", FileExist now=" + FileExist(path).ToString());
+		return true;
+	}
+};
+
+// ============================================================
 // НОВОЕ: имена soundset'ов - сирена в начале шторма (требует отдельный
 // маленький аддон EVRSiren_FIX, который регистрирует EVR_Siren_SoundSet
 // из evr_siren.ogg - его нужно поставить рядом с этим скриптом) и
@@ -198,44 +267,29 @@ modded class EVRStorm
 		MakeDirectory(EVR_CONFIG_FOLDER);
 		Print("[EVRStorm] EVR_LoadAllConfigs: MakeDirectory called for " + EVR_CONFIG_FOLDER + ", FileExist(folder)=" + FileExist(EVR_CONFIG_FOLDER).ToString());
 
-		// ФИКС: было "if (FileExist(path)) Load(); else Save();" - папка
-		// EVRStorm создавалась (значит функция реально вызывалась), но
-		// сами .json внутри не появлялись и без единой ошибки в RPT.
-		// Похоже, FileExist() тут не отличает "файла нет" от "папка есть",
-		// и код всегда уходил в ветку Load() - а загрузка из
-		// несуществующего файла молча ничего не делает (не ошибка,
-		// просто нет эффекта). Убрали зависимость от FileExist() совсем:
-		// сначала пробуем загрузить (если файла нет - объект просто
-		// останется со значениями по умолчанию), затем ВСЕГДА сохраняем -
-		// это гарантированно кладёт файл на диск при первом запуске и не
-		// портит уже сделанные вами правки при следующих (пересохранит
-		// то же самое, что подгрузил).
-		// ДИАГНОСТИКА: два фикса подряд (см. выше) не помогли и не дали
-		// ни одной ошибки в RPT - значит сам JsonFileLoader<T> в этой
-		// сборке движка либо не пишет файл, либо кидает исключение молча.
-		// Обвешиваем Print() каждый шаг - это самый базовый вызов,
-		// стопроцентно рабочий, чтобы увидеть в script log, где именно
-		// всё останавливается.
+		// ФИКС: встроенный JsonFileLoader<T> подтверждённо не пишет файлы
+		// на диск в этой сборке движка (и путь верный, и штатный рестарт
+		// сервера не помог - см. переписку). Заменили на свой EVRJsonLoader<T>
+		// (см. класс выше, объявлен рядом с EVRRPCConstants) - он работает
+		// через низкоуровневые OpenFile/FGets/FPrintln/CloseFile, как и
+		// другие реально работающие моды на этом сервере.
 		Print("[EVRStorm] Loading FogZone.json...");
 		m_EVR_FogZoneConfig = new EVRFogZoneConfig;
-		JsonFileLoader<EVRFogZoneConfig>.JsonLoadFile(EVR_FOGZONE_CONFIG_PATH, m_EVR_FogZoneConfig);
-		Print("[EVRStorm] Loaded FogZone.json (or defaults kept), now saving...");
-		JsonFileLoader<EVRFogZoneConfig>.JsonSaveFile(EVR_FOGZONE_CONFIG_PATH, m_EVR_FogZoneConfig);
-		Print("[EVRStorm] FogZone.json save call finished, FileExist=" + FileExist(EVR_FOGZONE_CONFIG_PATH).ToString());
+		if (!EVRJsonLoader<EVRFogZoneConfig>.LoadFromFile(EVR_FOGZONE_CONFIG_PATH, m_EVR_FogZoneConfig)) {
+			EVRJsonLoader<EVRFogZoneConfig>.SaveToFile(EVR_FOGZONE_CONFIG_PATH, m_EVR_FogZoneConfig);
+		}
 
 		Print("[EVRStorm] Loading Sounds.json...");
 		m_EVR_SoundsConfig = new EVRSoundsConfig;
-		JsonFileLoader<EVRSoundsConfig>.JsonLoadFile(EVR_SOUNDS_CONFIG_PATH, m_EVR_SoundsConfig);
-		Print("[EVRStorm] Loaded Sounds.json (or defaults kept), now saving...");
-		JsonFileLoader<EVRSoundsConfig>.JsonSaveFile(EVR_SOUNDS_CONFIG_PATH, m_EVR_SoundsConfig);
-		Print("[EVRStorm] Sounds.json save call finished, FileExist=" + FileExist(EVR_SOUNDS_CONFIG_PATH).ToString());
+		if (!EVRJsonLoader<EVRSoundsConfig>.LoadFromFile(EVR_SOUNDS_CONFIG_PATH, m_EVR_SoundsConfig)) {
+			EVRJsonLoader<EVRSoundsConfig>.SaveToFile(EVR_SOUNDS_CONFIG_PATH, m_EVR_SoundsConfig);
+		}
 
 		Print("[EVRStorm] Loading Mutants.json...");
 		m_EVR_MutantsConfig = new EVRFogMutantsConfig;
-		JsonFileLoader<EVRFogMutantsConfig>.JsonLoadFile(EVR_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig);
-		Print("[EVRStorm] Loaded Mutants.json (or defaults kept), now saving...");
-		JsonFileLoader<EVRFogMutantsConfig>.JsonSaveFile(EVR_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig);
-		Print("[EVRStorm] Mutants.json save call finished, FileExist=" + FileExist(EVR_MUTANTS_CONFIG_PATH).ToString());
+		if (!EVRJsonLoader<EVRFogMutantsConfig>.LoadFromFile(EVR_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig)) {
+			EVRJsonLoader<EVRFogMutantsConfig>.SaveToFile(EVR_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig);
+		}
 
 		Print("[EVRStorm] EVR_LoadAllConfigs: done");
 	}
