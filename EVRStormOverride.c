@@ -193,7 +193,10 @@ modded class EVRStorm
 			return;
 		}
 
+		Print("[EVRStorm] EVR_LoadAllConfigs: start");
+
 		MakeDirectory(EVR_CONFIG_FOLDER);
+		Print("[EVRStorm] EVR_LoadAllConfigs: MakeDirectory called for " + EVR_CONFIG_FOLDER + ", FileExist(folder)=" + FileExist(EVR_CONFIG_FOLDER).ToString());
 
 		// ФИКС: было "if (FileExist(path)) Load(); else Save();" - папка
 		// EVRStorm создавалась (значит функция реально вызывалась), но
@@ -207,17 +210,34 @@ modded class EVRStorm
 		// это гарантированно кладёт файл на диск при первом запуске и не
 		// портит уже сделанные вами правки при следующих (пересохранит
 		// то же самое, что подгрузил).
+		// ДИАГНОСТИКА: два фикса подряд (см. выше) не помогли и не дали
+		// ни одной ошибки в RPT - значит сам JsonFileLoader<T> в этой
+		// сборке движка либо не пишет файл, либо кидает исключение молча.
+		// Обвешиваем Print() каждый шаг - это самый базовый вызов,
+		// стопроцентно рабочий, чтобы увидеть в script log, где именно
+		// всё останавливается.
+		Print("[EVRStorm] Loading FogZone.json...");
 		m_EVR_FogZoneConfig = new EVRFogZoneConfig;
 		JsonFileLoader<EVRFogZoneConfig>.JsonLoadFile(EVR_FOGZONE_CONFIG_PATH, m_EVR_FogZoneConfig);
+		Print("[EVRStorm] Loaded FogZone.json (or defaults kept), now saving...");
 		JsonFileLoader<EVRFogZoneConfig>.JsonSaveFile(EVR_FOGZONE_CONFIG_PATH, m_EVR_FogZoneConfig);
+		Print("[EVRStorm] FogZone.json save call finished, FileExist=" + FileExist(EVR_FOGZONE_CONFIG_PATH).ToString());
 
+		Print("[EVRStorm] Loading Sounds.json...");
 		m_EVR_SoundsConfig = new EVRSoundsConfig;
 		JsonFileLoader<EVRSoundsConfig>.JsonLoadFile(EVR_SOUNDS_CONFIG_PATH, m_EVR_SoundsConfig);
+		Print("[EVRStorm] Loaded Sounds.json (or defaults kept), now saving...");
 		JsonFileLoader<EVRSoundsConfig>.JsonSaveFile(EVR_SOUNDS_CONFIG_PATH, m_EVR_SoundsConfig);
+		Print("[EVRStorm] Sounds.json save call finished, FileExist=" + FileExist(EVR_SOUNDS_CONFIG_PATH).ToString());
 
+		Print("[EVRStorm] Loading Mutants.json...");
 		m_EVR_MutantsConfig = new EVRFogMutantsConfig;
 		JsonFileLoader<EVRFogMutantsConfig>.JsonLoadFile(EVR_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig);
+		Print("[EVRStorm] Loaded Mutants.json (or defaults kept), now saving...");
 		JsonFileLoader<EVRFogMutantsConfig>.JsonSaveFile(EVR_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig);
+		Print("[EVRStorm] Mutants.json save call finished, FileExist=" + FileExist(EVR_MUTANTS_CONFIG_PATH).ToString());
+
+		Print("[EVRStorm] EVR_LoadAllConfigs: done");
 	}
 
 	// -----------------------------------------------------------
