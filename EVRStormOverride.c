@@ -33,13 +33,13 @@ modded class EVRConstants
 class EVRFogZoneConfig
 {
 	// Радиус тумана вокруг шара, метры
-	float radius = 60;
+	float radius = 150;
 
 	// Как часто (сек) применяется тик урона/эффектов, пока игрок в зоне
-	float tickIntervalSeconds = 4.0;
+	float tickIntervalSeconds = 5.0;
 
 	// Урон здоровью за один тик
-	float damagePerTick = 8.0;
+	float damagePerTick = 2.0;
 
 	// Шанс выронить оружие/предмет из рук за один тик (0..1)
 	float dropItemChance = 0.12;
@@ -62,7 +62,7 @@ class EVRFogZoneConfig
 	};
 
 	// Сколько объектов тумана раскидать по зоне (случайно вокруг центра)
-	int fogObjectCount = 10;
+	int fogObjectCount = 30;
 
 	// Насколько приподнять туман над рельефом, метры (каждый объект
 	// ставится по реальной высоте земли в своей точке + этот отступ)
