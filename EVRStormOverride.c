@@ -26,7 +26,7 @@ modded class EVRConstants
 // на одну и ту же переменную.
 //
 // ФИКС: раньше это были static const в скрипте - теперь загружается
-// из JSON ($profile:EVRStorm\FogZone.json), см. EVR_LoadFogZoneConfig
+// из JSON ($profile:EVRStorm/FogZone.json), см. EVR_LoadFogZoneConfig
 // в EVRStorm ниже. Значения по умолчанию (если файла ещё нет) - те же,
 // что были раньше.
 // ============================================================
@@ -167,7 +167,7 @@ class EVRJsonLoader<Class T>
 // "голоса" в тумане.
 //
 // ФИКС: раньше это были static const в скрипте - теперь тоже грузится
-// из JSON ($profile:EVRStorm\Sounds.json). Имена соundset'ов нужны
+// из JSON ($profile:EVRStorm/Sounds.json). Имена соundset'ов нужны
 // ОБЕИМ сторонам (сервер решает когда играть, но реально проигрывает
 // звук клиент) - поэтому сервер передаёт их клиенту прямо в RPC вместе
 // с сигналом "играй звук", а не рассчитывает, что у клиента есть свой
@@ -188,7 +188,7 @@ class EVRSoundsConfig
 // ============================================================
 // НОВОЕ: мутанты BRDK, спавнящиеся при входе игрока в туман.
 //
-// Настройки - в JSON-файле $profile:EVRStorm\Mutants.json (папка
+// Настройки - в JSON-файле $profile:EVRStorm/Mutants.json (папка
 // EVRStorm - там же лежат FogZone.json и Sounds.json, см. ниже).
 // Если файла нет - при первом старте шторма он создастся сам с
 // настройками по умолчанию (см. класс ниже) - дальше правьте JSON,
@@ -237,10 +237,19 @@ modded class EVRStorm
 {
 	// Папка EVRStorm в профиле сервера (та же папка, где логи/БД CE) -
 	// создаётся сама при первом сохранении любого из трёх файлов ниже.
+	// ФИКС: было "...\FogZone.json" с одинарным бэкслешем в строковом
+	// литерале - компилятор молча съедал "\F" как невалидный escape,
+	// путь превращался в "...EVRStormFogZone.json" БЕЗ разделителя -
+	// файл реально писался прямо в корень profiles, а не в подпапку
+	// EVRStorm (подтверждено логом: "loaded OK from
+	// $profile:EVRStormFogZone.json"). Отсюда и была папка EVRStorm
+	// пустой - файлы всё это время создавались, просто не там. Ставим
+	// прямой слэш "/" - движок понимает оба разделителя пути одинаково,
+	// а "/" никогда не экранируется.
 	static const string EVR_CONFIG_FOLDER = "$profile:EVRStorm";
-	static const string EVR_FOGZONE_CONFIG_PATH = "$profile:EVRStorm\FogZone.json";
-	static const string EVR_SOUNDS_CONFIG_PATH = "$profile:EVRStorm\Sounds.json";
-	static const string EVR_MUTANTS_CONFIG_PATH = "$profile:EVRStorm\Mutants.json";
+	static const string EVR_FOGZONE_CONFIG_PATH = "$profile:EVRStorm/FogZone.json";
+	static const string EVR_SOUNDS_CONFIG_PATH = "$profile:EVRStorm/Sounds.json";
+	static const string EVR_MUTANTS_CONFIG_PATH = "$profile:EVRStorm/Mutants.json";
 
 	protected bool m_EVR_FogInitialized = false;
 	protected ref array<Object> m_EVR_FogObjects = new array<Object>;
@@ -777,7 +786,7 @@ modded class PlayerBase
 		super.OnRPC(sender, rpc_type, ctx);
 
 		// ФИКС: soundset'ы теперь настраиваются через JSON на сервере
-		// (EVRSoundsConfig, $profile:EVRStorm\Sounds.json) - клиент не
+		// (EVRSoundsConfig, $profile:EVRStorm/Sounds.json) - клиент не
 		// имеет доступа к $profile: сервера, поэтому имя soundset'а
 		// сервер передаёт прямо в параметрах RPC, а не берёт из
 		// какой-то общей константы.
