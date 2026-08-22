@@ -1,10 +1,11 @@
 {
 	"enabled": true,
 	"spawnChance": 0.35,
+	"triggerRadius": 80,
 	"minMutants": 1,
 	"maxMutants": 3,
-	"spawnRadiusMin": 8,
-	"spawnRadiusMax": 20,
+	"spawnRadiusMin": 20,
+	"spawnRadiusMax": 60,
 	"reentryCooldownSeconds": 300,
 	"mutantClassnames": [
 		"BRDK_Giant_zmb", "BRDK_Faceless_zmb", "BRDK_Witch_ZMB", "BRDK_Alien_zmb",

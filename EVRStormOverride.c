@@ -186,7 +186,10 @@ class EVRSoundsConfig
 };
 
 // ============================================================
-// НОВОЕ: мутанты BRDK, спавнящиеся при входе игрока в туман.
+// НОВОЕ: мутанты BRDK, спавнящиеся вокруг ШАРА, когда игрок подходит к
+// нему ближе triggerRadius (не привязано к зоне тумана/урона - отдельная
+// дистанция и отдельная точка спавна, см. EVR_FogZoneTick/EVR_TrySpawnMutants
+// в EVRStorm ниже).
 //
 // Настройки - в JSON-файле $profile:EVRStorm/Mutants.json (папка
 // EVRStorm - там же лежат FogZone.json и Sounds.json, см. ниже).
@@ -200,18 +203,27 @@ class EVRFogMutantsConfig
 	// Включить/выключить спавн мутантов в тумане вообще
 	bool enabled = true;
 
-	// Шанс заспавнить мутантов при ВХОДЕ игрока в зону тумана (0..1) -
-	// не каждый тик, а один раз на каждый заход (см. reentryCooldownSeconds)
+	// Шанс заспавнить мутантов, когда игрок ПОДХОДИТ к шару ближе triggerRadius
+	// (0..1) - не каждый тик, а один раз на каждый заход в эту зону
+	// (см. reentryCooldownSeconds)
 	float spawnChance = 0.35;
+
+	// На каком расстоянии от ШАРА (m_AnomalyPosition) считается, что игрок
+	// "подошёл" - именно на этой дистанции срабатывает проверка spawnChance
+	// выше. Не связано с радиусом тумана (EVRFogZoneConfig.radius) - можно
+	// сделать меньше, больше или таким же, это отдельная зона.
+	float triggerRadius = 80;
 
 	// Сколько мутантов спавнить за раз (случайно между min и max)
 	int minMutants = 1;
 	int maxMutants = 3;
 
-	// На каком расстоянии от игрока спавнить, метры (не в упор,
-	// но и не за пределами тумана)
-	float spawnRadiusMin = 8;
-	float spawnRadiusMax = 20;
+	// На каком расстоянии от ШАРА (не от игрока) раскидывать мутантов,
+	// метры - кольцо вокруг m_AnomalyPosition. Задавайте не меньше
+	// triggerRadius, иначе они будут появляться позади игрока, ближе к
+	// центру, чем сам игрок стоит.
+	float spawnRadiusMin = 20;
+	float spawnRadiusMax = 60;
 
 	// Не спавнить мутантов этому же игроку повторно чаще, чем раз в
 	// столько секунд - даже если он выйдет и снова зайдёт в туман
@@ -257,6 +269,7 @@ modded class EVRStorm
 	protected ref EVRSoundsConfig m_EVR_SoundsConfig;
 	protected ref EVRFogMutantsConfig m_EVR_MutantsConfig;
 	protected ref map<PlayerBase, bool> m_EVR_PlayerInZone = new map<PlayerBase, bool>;
+	protected ref map<PlayerBase, bool> m_EVR_PlayerInMutantZone = new map<PlayerBase, bool>;
 	protected ref map<PlayerBase, float> m_EVR_PlayerMutantCooldown = new map<PlayerBase, float>;
 
 	// -----------------------------------------------------------
@@ -421,6 +434,25 @@ modded class EVRStorm
 			}
 
 			float dist = vector.Distance(player.GetPosition(), m_AnomalyPosition);
+
+			// НОВОЕ: отдельная от тумана зона - спавн мутантов срабатывает
+			// от расстояния игрока до самого ШАРА (triggerRadius), а не от
+			// входа в зону урона/эффектов тумана ниже. Проверяем это ДО
+			// "continue" по inZone - игрок может быть в триггере мутантов,
+			// даже если ещё вне (или уже вне) радиуса тумана.
+			if (m_EVR_MutantsConfig) {
+				bool inMutantZone = dist <= m_EVR_MutantsConfig.triggerRadius;
+				bool wasInMutantZone = false;
+				if (m_EVR_PlayerInMutantZone.Contains(player)) {
+					wasInMutantZone = m_EVR_PlayerInMutantZone.Get(player);
+				}
+				m_EVR_PlayerInMutantZone.Set(player, inMutantZone);
+
+				if (inMutantZone && !wasInMutantZone) {
+					EVR_TrySpawnMutants(player);
+				}
+			}
+
 			bool inZone = dist <= m_EVR_FogZoneConfig.radius;
 
 			bool wasInZone = false;
@@ -431,12 +463,6 @@ modded class EVRStorm
 
 			if (!inZone) {
 				continue;
-			}
-
-			// НОВОЕ: ровно в момент ВХОДА в зону (не каждый тик, пока стоит
-			// внутри) - шанс заспавнить мутантов BRDK рядом с игроком.
-			if (!wasInZone) {
-				EVR_TrySpawnMutants(player);
 			}
 
 			// урон по HP
@@ -474,8 +500,11 @@ modded class EVRStorm
 	}
 
 	// -----------------------------------------------------------
-	// Спавн мутантов BRDK рядом с игроком, вошедшим в туман. Настройки -
-	// из EVRFogMutantsConfig (JSON, см. EVR_LoadAllConfigs выше).
+	// Спавн мутантов BRDK вокруг ШАРА (m_AnomalyPosition), когда игрок
+	// подошёл ближе triggerRadius. Настройки - из EVRFogMutantsConfig
+	// (JSON, см. EVR_LoadAllConfigs выше). player тут нужен только для
+	// кулдауна (чтобы не спавнить того же игрока повторно каждый заход) -
+	// сама точка спавна от его позиции больше не зависит.
 	// -----------------------------------------------------------
 	void EVR_TrySpawnMutants(PlayerBase player)
 	{
@@ -484,7 +513,7 @@ modded class EVRStorm
 		}
 
 		// повторный кулдаун конкретно этому игроку, даже если он выйдет
-		// и снова зайдёт в туман раньше времени
+		// и снова зайдёт в зону триггера раньше времени
 		float now = GetGame().GetTime();
 		if (m_EVR_PlayerMutantCooldown.Contains(player)) {
 			float last = m_EVR_PlayerMutantCooldown.Get(player);
@@ -509,7 +538,7 @@ modded class EVRStorm
 			float angle = Math.RandomFloat(0, 6.283185);
 			float radius = Math.RandomFloat(m_EVR_MutantsConfig.spawnRadiusMin, m_EVR_MutantsConfig.spawnRadiusMax);
 			vector offset = Vector(Math.Cos(angle) * radius, 0, Math.Sin(angle) * radius);
-			vector spawnPos = player.GetPosition() + offset;
+			vector spawnPos = m_AnomalyPosition + offset;
 			spawnPos[1] = GetGame().SurfaceY(spawnPos[0], spawnPos[2]);
 
 			GetGame().CreateObject(cls, spawnPos, false, true, true);
