@@ -245,6 +245,55 @@ class EVRFogMutantsConfig
 	};
 };
 
+// ============================================================
+// ФИКС: уведомления о начале/конце шторма изначально звали
+// MDTPlayerLogger (мод MDTLogger) напрямую - но это вызвало краш
+// компиляции у ИГРОКОВ ("Can't find variable 'MDTPlayerLogger'"),
+// хотя сервер компилировался нормально. Причина: MDTLogger, судя по
+// всему, стоит в -servermod= (только на сервере), а этот файл
+// (EVRStormOverride.c) обязан компилироваться и на клиенте тоже (в
+// нём же клиентская часть тумана ниже) - ссылка на класс из мода,
+// которого нет в клиентской сборке, ломает компиляцию ВСЕГО модуля
+// World у клиента целиком, отсюда краш игры при заходе.
+//
+// Чтобы не зависеть ни от какого стороннего мода вообще - шлём в
+// Discord сами, напрямую через ВАНИЛЬНЫЕ классы RestApi/RestContext/
+// RestCallback (те же, что использует MDTLogger внутри себя - это
+// часть самой игры, не MDTLogger, есть у всех без исключения).
+// Настройка - свой отдельный JSON: $profile:EVRStorm/Discord.json.
+// ============================================================
+class EVRDiscordConfig
+{
+	// Пусто по умолчанию - пока не впишете сюда реальный webhook URL,
+	// отправка просто тихо пропускается (см. EVR_SendDiscordMessage).
+	string webhookUrl = "";
+	string botName = "EVRStorm";
+};
+
+class EVRDiscordPayload
+{
+	string username;
+	string content;
+};
+
+class EVRDiscordCallback : RestCallback
+{
+	override void OnError(int errorCode)
+	{
+		Print("[EVRStorm][Discord] Error code: " + errorCode.ToString());
+	}
+
+	override void OnTimeout()
+	{
+		Print("[EVRStorm][Discord] Timeout");
+	}
+
+	override void OnSuccess(string data, int dataSize)
+	{
+		Print("[EVRStorm][Discord] Sent OK");
+	}
+};
+
 modded class EVRStorm
 {
 	// Папка EVRStorm в профиле сервера (та же папка, где логи/БД CE) -
@@ -262,12 +311,15 @@ modded class EVRStorm
 	static const string EVR_FOGZONE_CONFIG_PATH = "$profile:EVRStorm/FogZone.json";
 	static const string EVR_SOUNDS_CONFIG_PATH = "$profile:EVRStorm/Sounds.json";
 	static const string EVR_MUTANTS_CONFIG_PATH = "$profile:EVRStorm/Mutants.json";
+	static const string EVR_DISCORD_CONFIG_PATH = "$profile:EVRStorm/Discord.json";
 
 	protected bool m_EVR_FogInitialized = false;
 	protected ref array<Object> m_EVR_FogObjects = new array<Object>;
 	protected ref EVRFogZoneConfig m_EVR_FogZoneConfig;
 	protected ref EVRSoundsConfig m_EVR_SoundsConfig;
 	protected ref EVRFogMutantsConfig m_EVR_MutantsConfig;
+	protected ref EVRDiscordConfig m_EVR_DiscordConfig;
+	protected ref EVRDiscordCallback m_EVR_DiscordCallback;
 	protected ref map<PlayerBase, bool> m_EVR_PlayerInZone = new map<PlayerBase, bool>;
 	protected ref map<PlayerBase, bool> m_EVR_PlayerInMutantZone = new map<PlayerBase, bool>;
 	protected ref map<PlayerBase, float> m_EVR_PlayerMutantCooldown = new map<PlayerBase, float>;
@@ -315,7 +367,62 @@ modded class EVRStorm
 			EVRJsonLoader<EVRFogMutantsConfig>.SaveToFile(EVR_MUTANTS_CONFIG_PATH, m_EVR_MutantsConfig);
 		}
 
+		Print("[EVRStorm] Loading Discord.json...");
+		m_EVR_DiscordConfig = new EVRDiscordConfig;
+		if (!EVRJsonLoader<EVRDiscordConfig>.LoadFromFile(EVR_DISCORD_CONFIG_PATH, m_EVR_DiscordConfig)) {
+			EVRJsonLoader<EVRDiscordConfig>.SaveToFile(EVR_DISCORD_CONFIG_PATH, m_EVR_DiscordConfig);
+		}
+
 		Print("[EVRStorm] EVR_LoadAllConfigs: done");
+	}
+
+	// -----------------------------------------------------------
+	// Свой собственный отправитель в Discord - не зависит ни от какого
+	// стороннего мода (см. комментарий над EVRDiscordConfig выше).
+	// Молча ничего не делает, пока webhookUrl пустой - настройте его в
+	// $profile:EVRStorm/Discord.json.
+	// -----------------------------------------------------------
+	void EVR_SendDiscordMessage(string content)
+	{
+		if (!GetGame().IsServer()) {
+			return;
+		}
+
+		if (!m_EVR_DiscordConfig || m_EVR_DiscordConfig.webhookUrl == "") {
+			return;
+		}
+
+		RestApi restApi = GetRestApi();
+		if (!restApi) {
+			restApi = CreateRestApi();
+		}
+		if (!restApi) {
+			Print("[EVRStorm][Discord] RestApi unavailable");
+			return;
+		}
+
+		if (!m_EVR_DiscordCallback) {
+			m_EVR_DiscordCallback = new EVRDiscordCallback();
+		}
+
+		RestContext ctx = restApi.GetRestContext(m_EVR_DiscordConfig.webhookUrl);
+		if (!ctx) {
+			Print("[EVRStorm][Discord] Cannot create RestContext");
+			return;
+		}
+		ctx.SetHeader("application/json");
+
+		EVRDiscordPayload payload = new EVRDiscordPayload();
+		payload.username = m_EVR_DiscordConfig.botName;
+		payload.content = content;
+
+		string json = JsonFileLoader<EVRDiscordPayload>.JsonMakeData(payload);
+		if (json == "") {
+			Print("[EVRStorm][Discord] Empty JSON payload");
+			return;
+		}
+
+		ctx.POST(m_EVR_DiscordCallback, "", json);
 	}
 
 	// -----------------------------------------------------------
@@ -646,14 +753,9 @@ modded class EVRStorm
 			EVR_BroadcastSiren();
 			GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(EVR_FogZoneTick, (int)(m_EVR_FogZoneConfig.tickIntervalSeconds * 1000), true);
 
-			// НОВОЕ: уведомление в Discord о начале шторма - через мод
-			// MDTLogger (отдельный, уже стоит на сервере), категория "storm".
-			// Класс MDTPlayerLogger - обычный класс без модификаторов,
-			// поэтому виден отовсюду в рамках модуля World, звать напрямую
-			// не требует ничего специального. Если MDTLogger вдруг не
-			// установлен - собираться не будет (Undefined class), тогда
-			// уберите эти два вызова (тут и в ~EVRStorm() ниже).
-			MDTPlayerLogger.LogStormEvent("start");
+			// НОВОЕ: уведомление в Discord о начале шторма - свой webhook,
+			// см. EVR_SendDiscordMessage/EVRDiscordConfig выше.
+			EVR_SendDiscordMessage("Шторм начался");
 		}
 
 		if (m_CanTeleport && EVRConstants.ALLOW_TELEPORTING) {
@@ -835,7 +937,7 @@ modded class EVRStorm
 	// -----------------------------------------------------------
 	void ~EVRStorm()
 	{
-		MDTPlayerLogger.LogStormEvent("end");
+		EVR_SendDiscordMessage("Шторм закончился");
 
 		EVR_CleanupFog();
 		GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).Remove(EVR_FogZoneTick);
