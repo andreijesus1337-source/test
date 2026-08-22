@@ -246,6 +246,57 @@ class EVRFogMutantsConfig
 };
 
 // ============================================================
+// НОВОЕ: "молчаливый наблюдатель" - в отличие от EVRFogMutantsConfig
+// выше (реальная угроза, атакует), это чисто атмосферный эффект:
+// мутант появляется неподалёку, стоит и "смотрит" на игрока, потом
+// сам исчезает. Специально сделан НЕУЯЗВИМЫМ (SetAllowDamage(false) в
+// EVR_TrySpawnWatcher ниже) - его нельзя убить/фармить лут, он не
+// добыча и не честная угроза, только décor.
+//
+// ВАЖНО: то, что он "не атакует" - НЕ гарантировано отключением ИИ
+// (такого API мы не проверяли и не трогаем), а просто тем, что он
+// живёт очень недолго (lifetimeSeconds) и стоит не в упор - за это
+// время ИИ обычно не успевает среагировать/добежать. Это не 100%
+// гарантия на случай, если он заспавнится совсем близко и ИИ среагирует
+// мгновенно - технически он всё ещё зомби со своим стандартным ИИ.
+// ============================================================
+class EVRWatcherConfig
+{
+	// Включить/выключить "наблюдателя" вообще
+	bool enabled = true;
+
+	// Шанс появления за один тик, пока игрок в зоне тумана (0..1) -
+	// проверяется КАЖДЫЙ тик, не только при входе, поэтому держите
+	// небольшим, чтобы не заспамить
+	float spawnChance = 0.08;
+
+	// На каком расстоянии от ИГРОКА появляется, метры - специально не
+	// вплотную (не должен выглядеть как обычный засадный мутант)
+	float spawnRadiusMin = 15;
+	float spawnRadiusMax = 30;
+
+	// Сколько секунд стоит, прежде чем пропасть сам
+	float lifetimeSeconds = 6.0;
+
+	// Не спавнить этому же игроку повторно чаще, чем раз в столько секунд
+	float reentryCooldownSeconds = 180;
+
+	// Из какого списка classname'ов выбирать - по умолчанию тот же список
+	// мутантов BRDK, что и у обычного спавна выше (можно сделать другим -
+	// например, оставить только самых жутких на вид)
+	ref array<string> watcherClassnames = {
+		"BRDK_Giant_zmb", "BRDK_Faceless_zmb", "BRDK_Witch_ZMB", "BRDK_Alien_zmb",
+		"BRDK_Brigadier_zmb", "BRDK_Buffed_zmb", "BRDK_Mortimer_zmb", "BRDK_Mutagen_zmb",
+		"BRDK_PoliceMan_zmb", "BRDK_Priest_zmb", "BRDK_Mechanic_zmb", "BRDK_LabAssistant_zmb",
+		"BRDK_Scientist_01_zmb", "BRDK_BioSuit_YELLOW_zmb", "BRDK_lizard_mut",
+		"BRDK_Comrad_zmb", "BRDK_Comrad2_zmb", "BRDK_Comrad3_zmb", "BRDK_FamSoldier_zmb",
+		"BRDK_AlienNomouth_crs", "BRDK_AlienNomouth_red_crs", "BRDK_AlienNomouth_Green_crs",
+		"BRDK_Alienna_crs", "BRDK_Hybrid_crs", "BRDK_Swamper_crs", "BRDK_Cripple_crs",
+		"BRDK_Cripple_2_crs", "BRDK_Cripple_3_crs", "BRDK_Dikker20_crs", "BRDK_SelkhamDemon_crs"
+	};
+};
+
+// ============================================================
 // ФИКС: уведомления о начале/конце шторма изначально звали
 // MDTPlayerLogger (мод MDTLogger) напрямую - но это вызвало краш
 // компиляции у ИГРОКОВ ("Can't find variable 'MDTPlayerLogger'"),
@@ -312,6 +363,7 @@ modded class EVRStorm
 	static const string EVR_SOUNDS_CONFIG_PATH = "$profile:EVRStorm/Sounds.json";
 	static const string EVR_MUTANTS_CONFIG_PATH = "$profile:EVRStorm/Mutants.json";
 	static const string EVR_DISCORD_CONFIG_PATH = "$profile:EVRStorm/Discord.json";
+	static const string EVR_WATCHER_CONFIG_PATH = "$profile:EVRStorm/Watcher.json";
 
 	protected bool m_EVR_FogInitialized = false;
 	protected ref array<Object> m_EVR_FogObjects = new array<Object>;
@@ -320,9 +372,11 @@ modded class EVRStorm
 	protected ref EVRFogMutantsConfig m_EVR_MutantsConfig;
 	protected ref EVRDiscordConfig m_EVR_DiscordConfig;
 	protected ref EVRDiscordCallback m_EVR_DiscordCallback;
+	protected ref EVRWatcherConfig m_EVR_WatcherConfig;
 	protected ref map<PlayerBase, bool> m_EVR_PlayerInZone = new map<PlayerBase, bool>;
 	protected ref map<PlayerBase, bool> m_EVR_PlayerInMutantZone = new map<PlayerBase, bool>;
 	protected ref map<PlayerBase, float> m_EVR_PlayerMutantCooldown = new map<PlayerBase, float>;
+	protected ref map<PlayerBase, float> m_EVR_PlayerWatcherCooldown = new map<PlayerBase, float>;
 
 	// -----------------------------------------------------------
 	// Грузит все три JSON-файла из папки EVRStorm один раз. Если файла
@@ -371,6 +425,12 @@ modded class EVRStorm
 		m_EVR_DiscordConfig = new EVRDiscordConfig;
 		if (!EVRJsonLoader<EVRDiscordConfig>.LoadFromFile(EVR_DISCORD_CONFIG_PATH, m_EVR_DiscordConfig)) {
 			EVRJsonLoader<EVRDiscordConfig>.SaveToFile(EVR_DISCORD_CONFIG_PATH, m_EVR_DiscordConfig);
+		}
+
+		Print("[EVRStorm] Loading Watcher.json...");
+		m_EVR_WatcherConfig = new EVRWatcherConfig;
+		if (!EVRJsonLoader<EVRWatcherConfig>.LoadFromFile(EVR_WATCHER_CONFIG_PATH, m_EVR_WatcherConfig)) {
+			EVRJsonLoader<EVRWatcherConfig>.SaveToFile(EVR_WATCHER_CONFIG_PATH, m_EVR_WatcherConfig);
 		}
 
 		Print("[EVRStorm] EVR_LoadAllConfigs: done");
@@ -603,6 +663,10 @@ modded class EVRStorm
 			if (player.GetIdentity()) {
 				GetGame().RPCSingleParam(player, EVRRPCConstants.RPC_EVR_FOG_EFFECT, new Param2<bool, string>(panic, m_EVR_SoundsConfig.screamSoundset), true, player.GetIdentity());
 			}
+
+			// НОВОЕ: "молчаливый наблюдатель" - чисто атмосферный, каждый тик,
+			// пока игрок в тумане (см. EVRWatcherConfig выше).
+			EVR_TrySpawnWatcher(player);
 		}
 	}
 
@@ -652,6 +716,64 @@ modded class EVRStorm
 		}
 
 		m_EVR_PlayerMutantCooldown.Set(player, now);
+	}
+
+	// -----------------------------------------------------------
+	// "Молчаливый наблюдатель" - см. EVRWatcherConfig выше. Появляется
+	// рядом с игроком, неуязвим, сам исчезает через lifetimeSeconds.
+	// -----------------------------------------------------------
+	void EVR_TrySpawnWatcher(PlayerBase player)
+	{
+		if (!m_EVR_WatcherConfig || !m_EVR_WatcherConfig.enabled) {
+			return;
+		}
+
+		float now = GetGame().GetTime();
+		if (m_EVR_PlayerWatcherCooldown.Contains(player)) {
+			float last = m_EVR_PlayerWatcherCooldown.Get(player);
+			if (now - last < m_EVR_WatcherConfig.reentryCooldownSeconds * 1000) {
+				return;
+			}
+		}
+
+		if (Math.RandomFloat01() >= m_EVR_WatcherConfig.spawnChance) {
+			return;
+		}
+
+		int classCount = m_EVR_WatcherConfig.watcherClassnames.Count();
+		if (classCount == 0) {
+			return;
+		}
+
+		string cls = m_EVR_WatcherConfig.watcherClassnames[Math.RandomInt(0, classCount)];
+		float angle = Math.RandomFloat(0, 6.283185);
+		float radius = Math.RandomFloat(m_EVR_WatcherConfig.spawnRadiusMin, m_EVR_WatcherConfig.spawnRadiusMax);
+		vector offset = Vector(Math.Cos(angle) * radius, 0, Math.Sin(angle) * radius);
+		vector spawnPos = player.GetPosition() + offset;
+		spawnPos[1] = GetGame().SurfaceY(spawnPos[0], spawnPos[2]);
+
+		Object watcher = GetGame().CreateObject(cls, spawnPos, false, true, true);
+		if (watcher) {
+			// ГЛАВНОЕ: неуязвим - его нельзя убить/фармить лут, он тут только
+			// "постоять и посмотреть", не честная угроза и не добыча.
+			watcher.SetAllowDamage(false);
+
+			// разворачиваем лицом к игроку - "смотрит" на него
+			vector toPlayer = player.GetPosition() - spawnPos;
+			float yaw = Math.Atan2(toPlayer[0], toPlayer[2]) * Math.RAD2DEG;
+			watcher.SetOrientation(Vector(yaw, 0, 0));
+
+			GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(EVR_DespawnWatcher, (int)(m_EVR_WatcherConfig.lifetimeSeconds * 1000), false, watcher);
+		}
+
+		m_EVR_PlayerWatcherCooldown.Set(player, now);
+	}
+
+	void EVR_DespawnWatcher(Object watcher)
+	{
+		if (watcher) {
+			GetGame().ObjectDelete(watcher);
+		}
 	}
 
 	// -----------------------------------------------------------
