@@ -26,7 +26,8 @@ class MDTLoggerConfig
     bool EnableSecurityLog = true;
     bool EnableCraftingLog = true;
     bool EnableFoodDrinkLog = true;
-    
+    bool EnableStormLog = true;
+
     bool IncludeSteamID = true;
     bool IncludePosition = true;
 
@@ -64,6 +65,7 @@ class MDTDiscordConfigs
     ref MDTDiscordConfig SecurityConfig = new MDTDiscordConfig();
     ref MDTDiscordConfig CraftingConfig = new MDTDiscordConfig();
     ref MDTDiscordConfig FoodDrinkConfig = new MDTDiscordConfig();
+    ref MDTDiscordConfig StormConfig = new MDTDiscordConfig();
 }
 
 class MDTDiscordPayload
@@ -198,6 +200,11 @@ class MDTPlayerLogger
     static string GetChatLogFile()
     {
         return "$profile:MDT/MDTDiscord/chat.log";
+    }
+
+    static string GetStormLogFile()
+    {
+        return "$profile:MDT/MDTDiscord/storm.log";
     }
 
     static string GetFarmingLogFile()
@@ -465,6 +472,7 @@ class MDTPlayerLogger
             case "security": return cfg.EnableSecurityLog;
             case "crafting": return cfg.EnableCraftingLog;
             case "food_drink": return cfg.EnableFoodDrinkLog;
+            case "storm": return cfg.EnableStormLog;
         }
 
         return false;
@@ -500,6 +508,7 @@ class MDTPlayerLogger
             case "security": return configs.SecurityConfig;
             case "crafting": return configs.CraftingConfig;
             case "food_drink": return configs.FoodDrinkConfig;
+            case "storm": return configs.StormConfig;
         }
 
         return null;
@@ -1594,6 +1603,37 @@ class MDTPlayerLogger
         SendDiscordMessage("chat", discordMsg);
 
         Print("[MDTLogger] Chat: " + identity.GetName() + " - " + message);
+    }
+
+    // -----------------------------------------------------------
+    // НОВОЕ: уведомление о начале/конце шторма EVRStorm - зовётся из
+    // EVRStormOverride.c (отдельный аддон, патчит EVRStorm через
+    // modded class). Не привязано к конкретному игроку - событие
+    // общесерверное, поэтому в отличие от LogChat тут нет PlayerIdentity.
+    // -----------------------------------------------------------
+    static void LogStormEvent(string phase)
+    {
+        if (!GetGame() || !GetGame().IsServer())
+            return;
+
+        InitOnce();
+
+        if (!IsLogEnabled("storm"))
+            return;
+
+        string ts = GetTimestamp();
+        string logLine = "[" + MDTLocale.GetString("STORM") + "] | " + ts + " | " + phase;
+        AppendToFile(GetStormLogFile(), logLine);
+
+        string discordMsg;
+        if (phase == "start")
+            discordMsg = ":cloud_lightning: **Начался шторм EVRStorm!**";
+        else
+            discordMsg = ":white_check_mark: **Шторм EVRStorm закончился.**";
+
+        SendDiscordMessage("storm", discordMsg);
+
+        Print("[MDTLogger] Storm: " + phase);
     }
 
     static void LogFarming(PlayerBase player, EntityAI item, string action)

@@ -645,6 +645,15 @@ modded class EVRStorm
 			EVR_SpawnFogZone();
 			EVR_BroadcastSiren();
 			GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(EVR_FogZoneTick, (int)(m_EVR_FogZoneConfig.tickIntervalSeconds * 1000), true);
+
+			// НОВОЕ: уведомление в Discord о начале шторма - через мод
+			// MDTLogger (отдельный, уже стоит на сервере), категория "storm".
+			// Класс MDTPlayerLogger - обычный класс без модификаторов,
+			// поэтому виден отовсюду в рамках модуля World, звать напрямую
+			// не требует ничего специального. Если MDTLogger вдруг не
+			// установлен - собираться не будет (Undefined class), тогда
+			// уберите эти два вызова (тут и в EndPhaseServer ниже).
+			MDTPlayerLogger.LogStormEvent("start");
 		}
 
 		if (m_CanTeleport && EVRConstants.ALLOW_TELEPORTING) {
@@ -793,6 +802,31 @@ modded class EVRStorm
 	override land_a3_chamber GetA3Chamber()
 	{
 		return null;
+	}
+
+	// -----------------------------------------------------------
+	// НОВОЕ: конец шторма - уведомление в Discord + уборка нашего
+	// состояния, чтобы следующий шторм стартовал чисто.
+	//
+	// ВАЖНО: EndPhaseServer() - единственный метод в этом файле, который
+	// не подтверждён напрямую (в отличие от InitPhaseServer - видел в
+	// логе, и MidPhaseServer - видел в реальном исходнике, см. комментарий
+	// выше). Предполагается по симметрии с этими двумя (стандартная
+	// трёхфазная схема Init/Mid/End у ивентов Namalsk). Если компилятор
+	// скажет "Undefined method" или похожее - пришлите ошибку, найдём
+	// точный метод завершения шторма.
+	// -----------------------------------------------------------
+	override void EndPhaseServer()
+	{
+		super.EndPhaseServer();
+
+		MDTPlayerLogger.LogStormEvent("end");
+
+		EVR_CleanupFog();
+		GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).Remove(EVR_FogZoneTick);
+		m_EVR_FogInitialized = false;
+		m_EVR_PlayerInZone.Clear();
+		m_EVR_PlayerInMutantZone.Clear();
 	}
 }
 
