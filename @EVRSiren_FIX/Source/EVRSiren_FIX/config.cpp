@@ -17,6 +17,15 @@
 //
 // Путь к сэмплу - БЕЗ расширения .ogg (как и во всех samples[] у
 // Namalsk) - движок сам ищет .ogg по этому пути.
+//
+// НОВОЕ: добавлен второй, отдельный звук - "голоса"/эмбиент тумана
+// (EVRFog_Voices_SoundSet, играет через screamSoundset в Sounds.json,
+// см. EVRStormOverride.c). Это ДРУГОЙ soundset, не сирена - раньше
+// его тут не было вообще, поэтому звук в тумане молчал (soundset с
+// таким именем нигде не существовал). Путь к сэмплу собран по тому,
+// что вы прислали (P:\EVRSiren_FIX\sound, имя файла = имя SoundSet'а,
+// как и с сиреной) - если реальное имя .ogg-файла отличается, поправьте
+// путь в samples[] у EVRFog_Voices_SoundShader ниже под ваше точное имя.
 // ============================================================
 
 class CfgPatches
@@ -41,6 +50,16 @@ class CfgSoundShaders
 		radius = 20000;
 		range = 20000;
 	};
+
+	class EVRFog_Voices_SoundShader
+	{
+		samples[] = {{"EVRSiren_FIX\sound\EVRFog_Voices_SoundSet", 1}};
+		volume = 1.0;
+		frequency = 1.0;
+		limitation = 0;
+		radius = 20000;
+		range = 20000;
+	};
 };
 
 class CfgSoundSets
@@ -48,6 +67,18 @@ class CfgSoundSets
 	class EVR_Siren_SoundSet
 	{
 		soundShaders[] = {"EVR_Siren_SoundShader"};
+		sound3DProcessingType = "character3DProcessingType";
+		volumeCurve = "characterAttenuationCurve";
+		distanceFilter = "defaultDistanceFilter";
+		spatial = 0;
+		doppler = 0;
+		loop = 0;
+		volumeFactor = 1.0;
+	};
+
+	class EVRFog_Voices_SoundSet
+	{
+		soundShaders[] = {"EVRFog_Voices_SoundShader"};
 		sound3DProcessingType = "character3DProcessingType";
 		volumeCurve = "characterAttenuationCurve";
 		distanceFilter = "defaultDistanceFilter";
