@@ -71,6 +71,12 @@ class EVRFogZoneConfig
 	// Подстраховка: если шторм не почистит объекты тумана штатно,
 	// удалить их принудительно через столько секунд после спавна
 	float fogLifetimeSeconds = 1800;
+
+	// НОВОЕ: "путаница личностей" - если в тумане ОДНОВРЕМЕННО 2+ игрока,
+	// каждому из них есть шанс за тик "послышаться" ник ДРУГОГО игрока,
+	// который тоже сейчас в тумане (текстом на экране - настоящей
+	// озвучки чужого ника у нас нет). 0 - выключить полностью.
+	float identityConfusionChance = 0.1;
 };
 
 // Отдельный RPC-канал сервер -> конкретный игрок для клиентских эффектов
@@ -594,6 +600,17 @@ modded class EVRStorm
 		array<Man> players = new array<Man>;
 		GetGame().GetPlayers(players);
 
+		// НОВОЕ: заранее собираем, кто вообще в тумане в этот тик - нужно
+		// для "путаницы личностей" ниже (чтобы взять ник ДРУГОГО игрока,
+		// который прямо сейчас тоже в тумане, а не просто где-то на сервере).
+		array<PlayerBase> zonePlayers = new array<PlayerBase>;
+		foreach (Man manCheck : players) {
+			PlayerBase pCheck = PlayerBase.Cast(manCheck);
+			if (pCheck && pCheck.IsAlive() && vector.Distance(pCheck.GetPosition(), m_AnomalyPosition) <= m_EVR_FogZoneConfig.radius) {
+				zonePlayers.Insert(pCheck);
+			}
+		}
+
 		foreach (Man man : players) {
 			PlayerBase player = PlayerBase.Cast(man);
 			if (!player || !player.IsAlive()) {
@@ -657,17 +674,45 @@ modded class EVRStorm
 				panic = true;
 			}
 
+			// НОВОЕ: путаница личностей - если рядом (в тумане) есть хотя бы
+			// ещё один игрок, есть шанс, что этому игроку "послышится" ник
+			// другого. whisperedName = "" если не сработало - клиент тогда
+			// просто ничего не показывает.
+			string whisperedName = "";
+			if (zonePlayers.Count() >= 2 && Math.RandomFloat01() < m_EVR_FogZoneConfig.identityConfusionChance) {
+				PlayerBase other = EVR_PickOtherPlayer(zonePlayers, player);
+				if (other && other.GetIdentity()) {
+					whisperedName = other.GetIdentity().GetName();
+				}
+			}
+
 			// звук/тряска/темнота - клиентский RPC конкретному игроку.
 			// Передаём screamSoundset тем же RPC - у клиента нет доступа
 			// к $profile: сервера, откуда взят m_EVR_SoundsConfig.
 			if (player.GetIdentity()) {
-				GetGame().RPCSingleParam(player, EVRRPCConstants.RPC_EVR_FOG_EFFECT, new Param2<bool, string>(panic, m_EVR_SoundsConfig.screamSoundset), true, player.GetIdentity());
+				GetGame().RPCSingleParam(player, EVRRPCConstants.RPC_EVR_FOG_EFFECT, new Param3<bool, string, string>(panic, m_EVR_SoundsConfig.screamSoundset, whisperedName), true, player.GetIdentity());
 			}
 
 			// НОВОЕ: "молчаливый наблюдатель" - чисто атмосферный, каждый тик,
 			// пока игрок в тумане (см. EVRWatcherConfig выше).
 			EVR_TrySpawnWatcher(player);
 		}
+	}
+
+	// Случайный игрок из списка, кроме exclude (для "путаницы личностей" выше).
+	// null, если в списке никого, кроме exclude, не осталось.
+	PlayerBase EVR_PickOtherPlayer(array<PlayerBase> list, PlayerBase exclude)
+	{
+		array<PlayerBase> candidates = new array<PlayerBase>;
+		foreach (PlayerBase p : list) {
+			if (p != exclude) {
+				candidates.Insert(p);
+			}
+		}
+		if (candidates.Count() == 0) {
+			return null;
+		}
+		return candidates[Math.RandomInt(0, candidates.Count())];
 	}
 
 	// -----------------------------------------------------------
@@ -1098,11 +1143,11 @@ modded class PlayerBase
 		// компиляции, даже если каждая объявлена в своём блоке. Разные
 		// имена под каждый RPC.
 		if (rpc_type == EVRRPCConstants.RPC_EVR_FOG_EFFECT) {
-			Param2<bool, string> fogData;
+			Param3<bool, string, string> fogData;
 			if (!ctx.Read(fogData)) {
 				return;
 			}
-			EVR_ApplyFogClientEffects(fogData.param1, fogData.param2);
+			EVR_ApplyFogClientEffects(fogData.param1, fogData.param2, fogData.param3);
 		}
 
 		if (rpc_type == EVRRPCConstants.RPC_EVR_SIREN) {
@@ -1129,11 +1174,26 @@ modded class PlayerBase
 	// Если найдёте у себя в скриптах игры (grep по 4_World на "Shake"/
 	// "AddShake"/"CameraShake") реальный рабочий метод - скажите его
 	// точную сигнатуру, верну тряску одной строкой.
-	void EVR_ApplyFogClientEffects(bool panic, string soundset)
+	// whisperedName - "путаница личностей" (см. EVRFogZoneConfig.identityConfusionChance
+	// и EVR_PickOtherPlayer на сервере) - ник другого игрока, который тоже
+	// сейчас в тумане, или "" если в этот тик не сработало.
+	//
+	// ФИКС: настоящей озвучки чужого ника у нас нет (нет TTS и нет
+	// заранее записанных голосов под все возможные ники) - показываем
+	// текстом. ВАЖНО: MessageImportant(...) - метод PlayerBase, который
+	// НЕ проверялся компиляцией в этой сессии (в отличие от остального
+	// файла). Если после сборки будет ошибка именно на этой строке -
+	// пришлите текст, найдём точный метод показа сообщения на экране
+	// в вашей версии движка.
+	void EVR_ApplyFogClientEffects(bool panic, string soundset, string whisperedName)
 	{
 		// звук "голосов" - не позиционный, играет у самого игрока
 		if (soundset != "") {
 			SEffectManager.PlaySound(soundset, GetPosition());
+		}
+
+		if (whisperedName != "") {
+			MessageImportant(whisperedName + "...");
 		}
 	}
 };

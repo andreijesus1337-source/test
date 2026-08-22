@@ -13,5 +13,6 @@
 	],
 	"fogObjectCount": 30,
 	"fogGroundOffset": 0.2,
-	"fogLifetimeSeconds": 1800
+	"fogLifetimeSeconds": 1800,
+	"identityConfusionChance": 0.1
 }
