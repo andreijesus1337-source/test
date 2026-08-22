@@ -138,9 +138,11 @@ class EVRJsonLoader<Class T>
 	{
 		JsonSerializer js = new JsonSerializer();
 		string content;
-		string error;
-		if (!js.WriteToString(data, true, content, error)) {
-			Print("[EVRStorm] EVRJsonLoader: WriteToString failed for " + path + ": " + error);
+		// ФИКС: компилятор ругался "Too many parameters for 'WriteToString'
+		// method" - в этой сборке движка у WriteToString нет отдельного
+		// out-параметра под текст ошибки (в отличие от ReadFromString).
+		if (!js.WriteToString(data, true, content)) {
+			Print("[EVRStorm] EVRJsonLoader: WriteToString failed for " + path);
 			return false;
 		}
 
