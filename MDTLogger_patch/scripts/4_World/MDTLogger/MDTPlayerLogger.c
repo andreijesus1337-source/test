@@ -1627,9 +1627,9 @@ class MDTPlayerLogger
 
         string discordMsg;
         if (phase == "start")
-            discordMsg = ":cloud_lightning: **Начался шторм EVRStorm!**";
+            discordMsg = ":cloud_lightning: **Шторм начался**";
         else
-            discordMsg = ":white_check_mark: **Шторм EVRStorm закончился.**";
+            discordMsg = ":white_check_mark: **Шторм закончился**";
 
         SendDiscordMessage("storm", discordMsg);
 

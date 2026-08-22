@@ -32,8 +32,9 @@
 - `MDTLoggerConfig.EnableStormLog` (вкл/выкл, по умолчанию true)
 - `MDTDiscordConfigs.StormConfig` (отдельный вебхук именно под шторм)
 - Пишет в `$profile:MDT/MDTDiscord/storm.log`
-- В Discord: `:cloud_lightning: **Начался шторм EVRStorm!**` при старте
-  и `:white_check_mark: **Шторм EVRStorm закончился.**` при завершении.
+- В Discord: `:cloud_lightning: **Шторм начался**` при старте
+  и `:white_check_mark: **Шторм закончился**` при завершении - без
+  упоминания EVRStorm, ничего лишнего.
 
 Зовётся не из самого MDTLogger, а из **EVRStormOverride.c**
 (`MDTPlayerLogger.LogStormEvent("start")` / `("end")`) - см. отдельный
